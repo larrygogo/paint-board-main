@@ -61,3 +61,25 @@ export const updateCanvasBackgroundImageRect = (image: fabric.Image) => {
     opacity: useBoardStore.getState().backgroundImageOpacity
   })
 }
+
+export const handleBackgroundImage = (url: string) => {
+  if (!paintBoard.canvas) return
+
+  fabric.Image.fromURL(url, (img) => {
+    const canvas = paintBoard.canvas
+    if (!canvas) return
+    
+    // 设置图片铺满画布
+    img.scaleToWidth(canvas.width!)
+    img.scaleToHeight(canvas.height!)
+    
+    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+      originX: 'left',
+      originY: 'top',
+      scaleX: canvas.width! / img.width!,
+      scaleY: canvas.height! / img.height!,
+      crossOrigin: 'anonymous'
+    })
+    canvas.renderAll()
+  })
+}

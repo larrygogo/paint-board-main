@@ -45,7 +45,8 @@ export class PaintBoard {
         enableRetinaScaling: true,
         backgroundVpt: false,
         width: canvasEl.width,
-        height: canvasEl.height
+        height: canvasEl.height,
+        backgroundColor: '#FFFFFF'
       })
       fabric.Object.prototype.set({
         borderColor: '#65CC8A',
@@ -84,41 +85,17 @@ export class PaintBoard {
    */
   initCanvasStorage() {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        const { files, currentId } = useFileStore.getState()
-        const file = files?.find((item) => item?.id === currentId)
-        if (file && this.canvas) {
-          this.canvas.clear()
-          this.canvas.loadFromJSON(file.boardData, () => {
-            if (this.canvas) {
-              if (file.viewportTransform) {
-                this.canvas.setViewportTransform(file.viewportTransform)
-              }
-              if (file?.zoom && this.canvas.width && this.canvas.height) {
-                this.canvas.zoomToPoint(
-                  new fabric.Point(
-                    this.canvas.width / 2,
-                    this.canvas.height / 2
-                  ),
-                  file.zoom
-                )
-              }
-
-              handleCanvasJSONLoaded(this.canvas)
-
-              fabric.Object.prototype.set({
-                objectCaching: useBoardStore.getState().isObjectCaching
-              })
-              this.canvas.renderAll()
-              this.triggerHook()
-              this.history = new History()
-            }
-            resolve(true)
-          })
-        } else {
-          resolve(true)
-        }
-      }, 300)
+      if (this.canvas) {
+        this.canvas.clear()
+        this.canvas.setBackgroundColor('#FFFFFF', () => {})
+        fabric.Object.prototype.set({
+          objectCaching: useBoardStore.getState().isObjectCaching
+        })
+        this.canvas.renderAll()
+        this.triggerHook()
+        this.history = new History()
+      }
+      resolve(true)
     })
   }
 

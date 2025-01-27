@@ -3,15 +3,15 @@ import useBoardStore from '@/store/board'
 import { useTranslation } from 'react-i18next'
 import { ActionMode } from '@/constants'
 import { paintBoard } from '@/utils/paintBoard'
-import { 
-  Undo2, 
-  Redo2, 
-  Copy, 
-  Trash2, 
-  Upload, 
-  Trash, 
-  Save, 
-  Files, 
+import {
+  Undo2,
+  Redo2,
+  Copy,
+  Trash2,
+  Upload,
+  Trash,
+  Save,
+  Files,
   Delete
 } from 'lucide-react'
 
@@ -80,7 +80,7 @@ const BoardOperation = () => {
 
   return (
     <>
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 flex gap-3 bg-[#eef1ff] rounded-lg shadow-xl p-2">
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 flex gap-1 bg-white rounded-lg shadow-xl p-1">
         <button
           onClick={undo}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
@@ -97,47 +97,27 @@ const BoardOperation = () => {
         </button>
 
         {[ActionMode.SELECT, ActionMode.Board].includes(mode) && (
-          <>
-            {/* <button
-              onClick={copyObject}
-              className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
-              title={t('operate.copy').toString()}
-            >
-              <Copy size={16} />
-            </button> */}
-            <button
-              onClick={deleteObject}
-              className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
-              title={t('operate.delete').toString()}
-            >
-              <Trash2 size={16} />
-            </button>
-          </>
+          <button
+            onClick={deleteObject}
+            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
+            title={t('operate.delete').toString()}
+          >
+            <Delete size={16} />
+          </button>
         )}
 
-        {/* <label
-          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"
-          title={t('operate.image').toString()}
-        >
-          <Upload size={16} />
-          <input
-            type="file"
-            id="image-upload"
-            accept=".jpeg, .jpg, .png"
-            className="hidden"
-            onChange={uploadImage}
-          />
-        </label> */}
+        <div className="w-px h-4 my-2 bg-gray-200"></div>
 
         <label
           htmlFor="clean-modal"
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"
           title={t('operate.clean').toString()}
         >
-          <Delete size={16} />
+          <Trash2 size={16} />
         </label>
 
-        <button
+
+        {/* <button
           onClick={saveImage}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
           title={t('operate.save').toString()}
@@ -152,7 +132,7 @@ const BoardOperation = () => {
           onClick={() => updateShowFile(true)}
         >
           <Files size={16} />
-        </label>
+        </label> */}
       </div>
 
       {showFile && <FileList updateShow={updateShowFile} />}

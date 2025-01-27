@@ -13,7 +13,8 @@ import { persist } from 'zustand/middleware'
 import { alignGuideLine } from '@/utils/common/fabricMixin/alignGuideLine'
 import {
   updateCanvasBackgroundImage,
-  handleBackgroundImageWhenCanvasSizeChange
+  handleBackgroundImageWhenCanvasSizeChange,
+  handleBackgroundImage
 } from '@/utils/common/background'
 
 interface BoardState {
@@ -172,15 +173,8 @@ const useBoardStore = create<BoardState & BoardAction>()(
           return {}
         })
       },
-      updateBackgroundImage: (image) => {
-        const canvas = paintBoard.canvas
-        const oldBackgroundImage = canvas?.backgroundImage as fabric.Image
-        if (canvas && image !== oldBackgroundImage?.src) {
-          updateCanvasBackgroundImage(image)
-          set({
-            hasBackgroundImage: true
-          })
-        }
+      updateBackgroundImage: (url: string) => {
+        handleBackgroundImage(url)
       },
       cleanBackgroundImage: () => {
         set({
