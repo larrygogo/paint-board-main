@@ -13,7 +13,9 @@ import {
   Minus,
   Type,
   Image,
-  Palette
+  Palette,
+  RefreshCw,
+  ArrowLeftRight
 } from 'lucide-react'
 
 import { DrawType } from '@/constants/draw'
@@ -25,10 +27,9 @@ import ColorPicker from '../colorPicker'
 
 const ToolPanel: FC = () => {
   const { mode, updateMode } = useBoardStore()
-  const [color, setColor] = useState('#000000')
   const { drawType, updateDrawType, updateBackgroundImage } = useBoardStore()
-  const { drawStyle, updateDrawStyle, updateDrawWidth, updateEraserWidth } = useDrawStore()
-  const { shapeStyle, updateShapeStyle, updateBorderWidth } = useShapeStore()
+  const { drawStyle, updateDrawStyle, updateDrawWidth, updateEraserWidth, updateDrawColors } = useDrawStore()
+  const { shapeStyle, updateShapeStyle, updateBorderWidth, updateBorderColor, borderColor } = useShapeStore()
   const [showShapePopover, setShowShapePopover] = useState(false)
   const popoverRef = useRef<HTMLDivElement>(null)
   const [showEraserConfig, setShowEraserConfig] = useState(false)
@@ -158,7 +159,9 @@ const ToolPanel: FC = () => {
   }
 
   const handleColorSelect = (color: string) => {
-    setColor(color)
+    updateDrawColors([color])
+    updateBorderColor(color)
+
     // 这里可以添加更新画笔颜色的逻辑
   }
 
@@ -247,8 +250,8 @@ const ToolPanel: FC = () => {
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
           onClick={() => setShowColorPicker(true)}
           style={{ 
-            color: color,
-            backgroundColor: color === '#ffffff' ? '#777777' : "",
+            color: borderColor,
+            backgroundColor: borderColor === '#ffffff' ? '#777777' : "",
           }}
         >
           <Palette size={16} />
@@ -285,6 +288,18 @@ const ToolPanel: FC = () => {
             </div>
           )}
         </div>
+
+        <button
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
+          onClick={() => {
+            // 发送消息给原生应用
+            if (window.webkit?.messageHandlers?.requestTransform) {
+              window.webkit.messageHandlers.requestTransform.postMessage("transform")
+            }
+          }}
+        >
+          <ArrowLeftRight size={16} />
+        </button>
       </div>
 
       {showColorPicker && (
@@ -292,7 +307,7 @@ const ToolPanel: FC = () => {
           visible={true}
           onClose={() => setShowColorPicker(false)}
           onSelect={handleColorSelect}
-          currentColor={color}
+          currentColor={borderColor}
         />
       )}
     </>

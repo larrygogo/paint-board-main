@@ -2,14 +2,15 @@ import React, { useEffect, useRef, useState } from 'react'
 import { paintBoard } from '@/utils/paintBoard'
 
 import SimpleToolPanel from '@/components/simpleToolPanel'
-import GuideInfo from '@/components/guideInfo'
 import CleanModal from '@/components/cleanModal'
 import BoardOperation from '@/components/boardOperation'
 import DeleteFileModal from '@/components/boardOperation/deleteFileModal'
+import useBoardStore from '@/store/board'
 
 const Board: React.FC = () => {
   const canvasEl = useRef<HTMLCanvasElement>(null)
   const [canvasLoaded, setCanvasLoaded] = useState(false)
+  const { updateBackgroundImage } = useBoardStore()
 
   const updateCanvasSize = () => {
     if (canvasEl.current && paintBoard.canvas) {
@@ -57,6 +58,30 @@ const Board: React.FC = () => {
       window.removeEventListener('resize', updateCanvasSize)
     }
   }, [])
+
+  useEffect(() => {
+    // 实现接收图片的全局方法
+    window.receiveImage = (imageUrl: string) => {
+      updateBackgroundImage(imageUrl)
+    }
+
+    // 实现清空画布的全局方法
+    window.clearCanvasConfirm = () => {
+      if (paintBoard.canvas) {
+        paintBoard.canvas.clear()
+        paintBoard.canvas.renderAll()
+        paintBoard.history?.clean()
+        console.log(paintBoard.history?.index)
+
+      }
+    }
+
+    return () => {
+      // 清理全局方法
+      window.receiveImage = () => {}
+      window.clearCanvasConfirm = () => {}
+    }
+  }, [updateBackgroundImage])
 
   return (
     <div>

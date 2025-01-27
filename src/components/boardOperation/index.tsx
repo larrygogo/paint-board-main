@@ -12,8 +12,10 @@ import {
   Trash,
   Save,
   Files,
-  Delete
+  Delete,
+  Share2
 } from 'lucide-react'
+import { alignGuideLine } from '@/utils/common/fabricMixin/alignGuideLine'
 
 import FileList from './fileList'
 import DownloadImage from './downloadImage'
@@ -27,12 +29,6 @@ const BoardOperation = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false)
   const [uploadImageURL, setUploadImageURL] = useState('')
   const [showUploadModal, setShowUploadModal] = useState(false)
-
-  // copy activity object
-  const copyObject = () => {
-    paintBoard.copyObject()
-  }
-
   // delete activity object
   const deleteObject = () => {
     paintBoard.deleteObject()
@@ -48,33 +44,20 @@ const BoardOperation = () => {
     paintBoard.history?.redo()
   }
 
-  // upload image file
-  const uploadImage = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) {
-      return
-    }
-
-    const reader = new FileReader()
-    reader.onload = (fEvent) => {
-      const data = fEvent.target?.result
-      if (data) {
-        if (data && typeof data === 'string') {
-          setUploadImageURL(data)
-          setShowUploadModal(true)
-        }
-      }
-      e.target.value = ''
-    }
-    reader.readAsDataURL(file)
-  }
-
-  // save as image
-  const saveImage = () => {
+  // 生成画布的 base64 数据
+  const handleShare = () => {
     if (paintBoard.canvas) {
-      const url = paintBoard.canvas.toDataURL()
-      setDownloadImageURL(url)
-      setShowDownloadModal(true)
+      try {
+        const url = paintBoard.executeWithoutListeners(() => {
+          return paintBoard.canvas!.toDataURL()
+        })
+        console.log(url)
+        if (window.webkit?.messageHandlers.messageHandler) {
+          window.webkit.messageHandlers.messageHandler.postMessage(url);
+        }
+      } catch (error) {
+        console.error('Failed to generate canvas data URL:', error)
+      }
     }
   }
 
@@ -108,31 +91,27 @@ const BoardOperation = () => {
 
         <div className="w-px h-4 my-2 bg-gray-200"></div>
 
-        <label
-          htmlFor="clean-modal"
+        <button
+          onClick={() => {
+            if (window.webkit?.messageHandlers.clearCanvas) {
+              window.webkit.messageHandlers.clearCanvas.postMessage("clearCanvas");
+            }
+          }}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"
           title={t('operate.clean').toString()}
         >
           <Trash2 size={16} />
-        </label>
-
-
-        {/* <button
-          onClick={saveImage}
-          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
-          title={t('operate.save').toString()}
-        >
-          <Save size={16} />
         </button>
 
-        <label
-          htmlFor="my-drawer-4"
-          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"
-          title={t('operate.fileList').toString()}
-          onClick={() => updateShowFile(true)}
+        <div className="w-px h-4 my-2 bg-gray-200"></div>
+
+        <button
+          onClick={handleShare}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
+          title={t('operate.share').toString()}
         >
-          <Files size={16} />
-        </label> */}
+          <Share2 size={16} />
+        </button>
       </div>
 
       {showFile && <FileList updateShow={updateShowFile} />}

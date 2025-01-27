@@ -87,12 +87,12 @@ export class History {
 
   clean() {
     paintBoard?.canvas?.clear()
-    this.index = 0
-    this.diffs = []
-    this.canvasData = {}
     useFileStore.getState().updateBoardData(initState)
     useBoardStore.getState().updateBackgroundColor('#ffffff')
     useBoardStore.getState().cleanBackgroundImage()
+    this.index = 0
+    this.diffs = []
+    this.canvasData = {}
   }
 
   initHistory() {

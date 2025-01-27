@@ -16,7 +16,6 @@ import { material } from './element/draw/material'
 import { renderMultiColor } from './element/draw/multiColor'
 import { renderPencilBrush } from './element/draw/basic'
 import { getEraserWidth } from './common/draw'
-import { handleCanvasJSONLoaded } from './common/loadCanvas'
 import { handleBackgroundImageWhenCanvasSizeChange } from './common/background'
 
 import useFileStore from '@/store/files'
@@ -88,6 +87,7 @@ export class PaintBoard {
       if (this.canvas) {
         this.canvas.clear()
         this.canvas.setBackgroundColor('#FFFFFF', () => {})
+        
         fabric.Object.prototype.set({
           objectCaching: useBoardStore.getState().isObjectCaching
         })
@@ -351,6 +351,28 @@ export class PaintBoard {
       useFileStore.getState().updateCanvasHeight(height)
     }
   }, 500)
+
+  // 临时禁用所有事件监听并执行回调
+  executeWithoutListeners<T>(callback: () => T): T {
+    if (!this.canvas) {
+      throw new Error('Canvas is not initialized')
+    }
+
+    // 保存当前的事件监听器
+    const currentListeners = { ...this.canvas.__eventListeners }
+    
+    // 清空所有事件监听器
+    this.canvas.__eventListeners = {}
+    
+    try {
+      // 执行回调
+      const result = callback()
+      return result
+    } finally {
+      // 恢复事件监听器
+      this.canvas.__eventListeners = currentListeners
+    }
+  }
 }
 
 export const paintBoard = new PaintBoard()
