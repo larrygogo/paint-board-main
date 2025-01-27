@@ -13,7 +13,7 @@ const Board: React.FC = () => {
 
   const updateCanvasSize = () => {
     if (canvasEl.current && paintBoard.canvas) {
-      const size = Math.min(window.innerWidth, window.innerHeight, 512)
+      const size = Math.min(window.innerWidth, window.innerHeight, 512) - 20
       
       // 设置DOM canvas的尺寸
       canvasEl.current.width = size
@@ -30,7 +30,7 @@ const Board: React.FC = () => {
 
   useEffect(() => {
     if (canvasEl.current) {
-      const size = Math.min(window.innerWidth, window.innerHeight, 512)
+      const size = Math.min(window.innerWidth, window.innerHeight, 512) - 20
       
       // 设置canvas的实际尺寸
       canvasEl.current.width = size

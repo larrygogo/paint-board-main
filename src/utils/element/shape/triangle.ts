@@ -27,7 +27,8 @@ export class TriangleShape {
       strokeUniform: true,
       strokeLineCap: 'round',
       strokeDashArray: getShapeBorder(strokeWidth),
-      perPixelTargetFind: true
+      perPixelTargetFind: true,
+      strokeLineJoin: 'round'
     })
 
     paintBoard.canvas?.add(shape)

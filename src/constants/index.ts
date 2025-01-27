@@ -2,7 +2,8 @@ export const ActionMode = {
   DRAW: 'draw',
   ERASE: 'erase',
   SELECT: 'select',
-  Board: 'board'
+  Board: 'board',
+  TEXT: 'text'
 }
 
 export const FREESTYLE_ELEMENT_CUSTOM_TYPE = {
