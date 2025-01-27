@@ -11,7 +11,8 @@ import {
   Upload, 
   Trash, 
   Save, 
-  Files 
+  Files, 
+  Delete
 } from 'lucide-react'
 
 import FileList from './fileList'
@@ -97,13 +98,13 @@ const BoardOperation = () => {
 
         {[ActionMode.SELECT, ActionMode.Board].includes(mode) && (
           <>
-            <button
+            {/* <button
               onClick={copyObject}
               className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
               title={t('operate.copy').toString()}
             >
               <Copy size={16} />
-            </button>
+            </button> */}
             <button
               onClick={deleteObject}
               className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
@@ -114,7 +115,7 @@ const BoardOperation = () => {
           </>
         )}
 
-        <label
+        {/* <label
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"
           title={t('operate.image').toString()}
         >
@@ -126,14 +127,14 @@ const BoardOperation = () => {
             className="hidden"
             onChange={uploadImage}
           />
-        </label>
+        </label> */}
 
         <label
           htmlFor="clean-modal"
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"
           title={t('operate.clean').toString()}
         >
-          <Trash size={16} />
+          <Delete size={16} />
         </label>
 
         <button

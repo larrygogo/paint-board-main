@@ -231,7 +231,6 @@ const UploadImage: FC<IProps> = ({ url, showModal, setShowModal }) => {
             />
           )}
         </div>
-
         <ImageSegmentation
           url={url}
           showModal={showImageSegmentationModal}
