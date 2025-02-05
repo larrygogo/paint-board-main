@@ -87,7 +87,7 @@ export class PaintBoard {
       if (this.canvas) {
         this.canvas.clear()
         this.canvas.setBackgroundColor('#FFFFFF', () => {})
-        
+
         fabric.Object.prototype.set({
           objectCaching: useBoardStore.getState().isObjectCaching
         })
@@ -360,10 +360,10 @@ export class PaintBoard {
 
     // 保存当前的事件监听器
     const currentListeners = { ...this.canvas.__eventListeners }
-    
+
     // 清空所有事件监听器
     this.canvas.__eventListeners = {}
-    
+
     try {
       // 执行回调
       const result = callback()

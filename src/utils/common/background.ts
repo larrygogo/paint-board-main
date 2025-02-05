@@ -68,11 +68,11 @@ export const handleBackgroundImage = (url: string) => {
   fabric.Image.fromURL(url, (img) => {
     const canvas = paintBoard.canvas
     if (!canvas) return
-    
+
     // 设置图片铺满画布
     img.scaleToWidth(canvas.width!)
     img.scaleToHeight(canvas.height!)
-    
+
     canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
       originX: 'left',
       originY: 'top',

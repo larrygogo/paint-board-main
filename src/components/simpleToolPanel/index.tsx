@@ -28,8 +28,20 @@ import ColorPicker from '../colorPicker'
 const ToolPanel: FC = () => {
   const { mode, updateMode } = useBoardStore()
   const { drawType, updateDrawType, updateBackgroundImage } = useBoardStore()
-  const { drawStyle, updateDrawStyle, updateDrawWidth, updateEraserWidth, updateDrawColors } = useDrawStore()
-  const { shapeStyle, updateShapeStyle, updateBorderWidth, updateBorderColor, borderColor } = useShapeStore()
+  const {
+    drawStyle,
+    updateDrawStyle,
+    updateDrawWidth,
+    updateEraserWidth,
+    updateDrawColors
+  } = useDrawStore()
+  const {
+    shapeStyle,
+    updateShapeStyle,
+    updateBorderWidth,
+    updateBorderColor,
+    borderColor
+  } = useShapeStore()
   const [showShapePopover, setShowShapePopover] = useState(false)
   const popoverRef = useRef<HTMLDivElement>(null)
   const [showEraserConfig, setShowEraserConfig] = useState(false)
@@ -39,7 +51,10 @@ const ToolPanel: FC = () => {
   // 处理点击外部关闭 popover
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node)
+      ) {
         setShowShapePopover(false)
       }
     }
@@ -60,7 +75,10 @@ const ToolPanel: FC = () => {
   // 处理点击外部关闭 eraser config
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (eraserRef.current && !eraserRef.current.contains(event.target as Node)) {
+      if (
+        eraserRef.current &&
+        !eraserRef.current.contains(event.target as Node)
+      ) {
         setShowEraserConfig(false)
       }
     }
@@ -96,23 +114,35 @@ const ToolPanel: FC = () => {
     {
       icon: <Square size={16} />,
       style: ShapeStyle.Rect,
-      isActive: mode === ActionMode.DRAW && drawType === DrawType.Shape && shapeStyle === ShapeStyle.Rect
+      isActive:
+        mode === ActionMode.DRAW &&
+        drawType === DrawType.Shape &&
+        shapeStyle === ShapeStyle.Rect
     },
     {
       icon: <Triangle size={16} />,
       style: ShapeStyle.Triangle,
-      isActive: mode === ActionMode.DRAW && drawType === DrawType.Shape && shapeStyle === ShapeStyle.Triangle
+      isActive:
+        mode === ActionMode.DRAW &&
+        drawType === DrawType.Shape &&
+        shapeStyle === ShapeStyle.Triangle
     },
     {
       icon: <Circle size={16} />,
       style: ShapeStyle.Ellipse,
-      isActive: mode === ActionMode.DRAW && drawType === DrawType.Shape && shapeStyle === ShapeStyle.Ellipse
+      isActive:
+        mode === ActionMode.DRAW &&
+        drawType === DrawType.Shape &&
+        shapeStyle === ShapeStyle.Ellipse
     },
     {
       icon: <Minus size={16} />,
       style: ShapeStyle.Line,
-      isActive: mode === ActionMode.DRAW && drawType === DrawType.Shape && shapeStyle === ShapeStyle.Line
-    },
+      isActive:
+        mode === ActionMode.DRAW &&
+        drawType === DrawType.Shape &&
+        shapeStyle === ShapeStyle.Line
+    }
   ]
 
   const handleShapeSelect = (style: string) => {
@@ -152,7 +182,9 @@ const ToolPanel: FC = () => {
   // 获取当前激活的形状图标
   const getShapeIcon = () => {
     if (mode === ActionMode.DRAW && drawType === DrawType.Shape) {
-      const activeShape = shapeButtons.find(shape => shape.style === shapeStyle)
+      const activeShape = shapeButtons.find(
+        (shape) => shape.style === shapeStyle
+      )
       return activeShape?.icon || <Shapes size={16} />
     }
     return <Shapes size={16} />
@@ -169,22 +201,24 @@ const ToolPanel: FC = () => {
     <>
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1 bg-white rounded-lg shadow-xl p-1">
         <button
-          className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${mode === ActionMode.SELECT
+          className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${
+            mode === ActionMode.SELECT
               ? 'bg-green-500 text-white shadow-lg'
               : 'text-gray-600 hover:bg-gray-100'
-            }`}
+          }`}
           onClick={() => updateMode(ActionMode.SELECT)}
         >
           <MousePointer size={16} />
         </button>
 
         <button
-          className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${mode === ActionMode.DRAW &&
-              drawType === DrawType.FreeStyle &&
-              drawStyle === DrawStyle.Basic
+          className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${
+            mode === ActionMode.DRAW &&
+            drawType === DrawType.FreeStyle &&
+            drawStyle === DrawStyle.Basic
               ? 'bg-green-500 text-white shadow-lg'
               : 'text-gray-600 hover:bg-gray-100'
-            }`}
+          }`}
           onClick={() => {
             updateMode(ActionMode.DRAW)
             updateDrawType(DrawType.FreeStyle)
@@ -197,10 +231,11 @@ const ToolPanel: FC = () => {
 
         <div className="relative" ref={popoverRef}>
           <button
-            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${mode === ActionMode.DRAW && drawType === DrawType.Shape
+            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${
+              mode === ActionMode.DRAW && drawType === DrawType.Shape
                 ? 'bg-green-500 text-white shadow-lg'
                 : 'text-gray-600 hover:bg-gray-100'
-              }`}
+            }`}
             onClick={() => setShowShapePopover(!showShapePopover)}
           >
             {getShapeIcon()}
@@ -211,10 +246,11 @@ const ToolPanel: FC = () => {
               {shapeButtons.map((shape, index) => (
                 <button
                   key={index}
-                  className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${shape.isActive
+                  className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${
+                    shape.isActive
                       ? 'bg-green-500 text-white shadow-lg'
                       : 'text-gray-600 hover:bg-gray-100'
-                    }`}
+                  }`}
                   onClick={() => handleShapeSelect(shape.style)}
                 >
                   {shape.icon}
@@ -225,10 +261,11 @@ const ToolPanel: FC = () => {
         </div>
 
         <button
-          className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${mode === ActionMode.TEXT
+          className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${
+            mode === ActionMode.TEXT
               ? 'bg-green-500 text-white shadow-lg'
               : 'text-gray-600 hover:bg-gray-100'
-            }`}
+          }`}
           onClick={inputText}
         >
           <Type size={16} />
@@ -249,9 +286,9 @@ const ToolPanel: FC = () => {
         <button
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
           onClick={() => setShowColorPicker(true)}
-          style={{ 
+          style={{
             color: borderColor,
-            backgroundColor: borderColor === '#ffffff' ? '#777777' : "",
+            backgroundColor: borderColor === '#ffffff' ? '#777777' : ''
           }}
         >
           <Palette size={16} />
@@ -259,10 +296,11 @@ const ToolPanel: FC = () => {
 
         <div className="relative" ref={eraserRef}>
           <button
-            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${mode === ActionMode.ERASE
+            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 ${
+              mode === ActionMode.ERASE
                 ? 'bg-green-500 text-white shadow-lg'
                 : 'text-gray-600 hover:bg-gray-100'
-              }`}
+            }`}
             onClick={() => {
               updateMode(ActionMode.ERASE)
               updateEraserWidth(20)
@@ -282,7 +320,9 @@ const ToolPanel: FC = () => {
                 step="5"
                 defaultValue="20"
                 className="flex-1"
-                onChange={(e) => handleEraserWidthChange(Number(e.target.value))}
+                onChange={(e) =>
+                  handleEraserWidthChange(Number(e.target.value))
+                }
               />
               <span className="text-xs text-gray-500">30</span>
             </div>
@@ -294,7 +334,9 @@ const ToolPanel: FC = () => {
           onClick={() => {
             // 发送消息给原生应用
             if (window.webkit?.messageHandlers?.requestTransform) {
-              window.webkit.messageHandlers.requestTransform.postMessage("transform")
+              window.webkit.messageHandlers.requestTransform.postMessage(
+                'transform'
+              )
             }
           }}
         >

@@ -10,5 +10,3 @@ export const DrawTypeSwitch = [
     text: 'drawType.shape'
   }
 ]
-
-

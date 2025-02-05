@@ -15,13 +15,13 @@ const Board: React.FC = () => {
   const updateCanvasSize = () => {
     if (canvasEl.current && paintBoard.canvas) {
       const size = Math.min(window.innerWidth, window.innerHeight, 512) - 20
-      
+
       // 设置DOM canvas的尺寸
       canvasEl.current.width = size
       canvasEl.current.height = size
       canvasEl.current.style.width = `${size}px`
       canvasEl.current.style.height = `${size}px`
-      
+
       // 设置fabric canvas的尺寸
       paintBoard.canvas.setWidth(size)
       paintBoard.canvas.setHeight(size)
@@ -32,15 +32,15 @@ const Board: React.FC = () => {
   useEffect(() => {
     if (canvasEl.current) {
       const size = Math.min(window.innerWidth, window.innerHeight, 512) - 20
-      
+
       // 设置canvas的实际尺寸
       canvasEl.current.width = size
       canvasEl.current.height = size
-      
+
       // 设置显示尺寸
       canvasEl.current.style.width = `${size}px`
       canvasEl.current.style.height = `${size}px`
-      
+
       paintBoard
         .initCanvas(canvasEl.current as HTMLCanvasElement)
         .then((loaded) => {
@@ -72,7 +72,6 @@ const Board: React.FC = () => {
         paintBoard.canvas.renderAll()
         paintBoard.history?.clean()
         console.log(paintBoard.history?.index)
-
       }
     }
 
@@ -82,6 +81,7 @@ const Board: React.FC = () => {
       window.clearCanvasConfirm = () => {}
     }
   }, [updateBackgroundImage])
+
 
   return (
     <div>

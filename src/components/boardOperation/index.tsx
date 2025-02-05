@@ -53,7 +53,7 @@ const BoardOperation = () => {
         })
         console.log(url)
         if (window.webkit?.messageHandlers.messageHandler) {
-          window.webkit.messageHandlers.messageHandler.postMessage(url);
+          window.webkit.messageHandlers.messageHandler.postMessage(url)
         }
       } catch (error) {
         console.error('Failed to generate canvas data URL:', error)
@@ -94,7 +94,9 @@ const BoardOperation = () => {
         <button
           onClick={() => {
             if (window.webkit?.messageHandlers.clearCanvas) {
-              window.webkit.messageHandlers.clearCanvas.postMessage("clearCanvas");
+              window.webkit.messageHandlers.clearCanvas.postMessage(
+                'clearCanvas'
+              )
             }
           }}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"

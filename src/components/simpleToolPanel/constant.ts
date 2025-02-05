@@ -14,7 +14,7 @@ export const modeSwitch = [
   {
     type: ActionMode.SELECT,
     text: 'tool.select'
-  },
+  }
 ]
 
 export const DrawTypeSwitch = [
