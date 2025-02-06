@@ -77,11 +77,10 @@ const Board: React.FC = () => {
 
     return () => {
       // 清理全局方法
-      window.receiveImage = () => {}
-      window.clearCanvasConfirm = () => {}
+      window.receiveImage = undefined
+      window.clearCanvasConfirm = undefined
     }
   }, [updateBackgroundImage])
-
 
   return (
     <div>

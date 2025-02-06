@@ -85,6 +85,12 @@ export class PaintBoard {
   initCanvasStorage() {
     return new Promise((resolve) => {
       if (this.canvas) {
+        // 清除本地存储
+        localStorage.removeItem('PAINT-BOARD-DRAW-STORE')
+        localStorage.removeItem('PAINT-BOARD-SHAPE-STORE')
+        localStorage.removeItem('PAINT-BOARD-BOARD-STORE')
+        localStorage.removeItem('PAINT-BOARD-FILES-STORE')
+
         this.canvas.clear()
         this.canvas.setBackgroundColor('#FFFFFF', () => {})
 

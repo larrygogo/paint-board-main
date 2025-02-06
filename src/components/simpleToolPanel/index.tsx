@@ -149,7 +149,6 @@ const ToolPanel: FC = () => {
     updateMode(ActionMode.DRAW)
     updateDrawType(DrawType.Shape)
     updateShapeStyle(style)
-    updateBorderWidth(3)
     setShowShapePopover(false)
   }
 
@@ -177,6 +176,14 @@ const ToolPanel: FC = () => {
       e.target.value = ''
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleBackgroundImageConfirm = () => {
+    if (window.webkit?.messageHandlers?.requestBackground) {
+      window.webkit.messageHandlers.requestBackground.postMessage(
+        'requestBackground'
+      )
+    }
   }
 
   // 获取当前激活的形状图标
@@ -223,7 +230,6 @@ const ToolPanel: FC = () => {
             updateMode(ActionMode.DRAW)
             updateDrawType(DrawType.FreeStyle)
             updateDrawStyle(DrawStyle.Basic)
-            updateDrawWidth(5)
           }}
         >
           <Pencil size={16} />
@@ -273,14 +279,15 @@ const ToolPanel: FC = () => {
 
         <label
           className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer`}
+          onClick={handleBackgroundImageConfirm}
         >
           <Image size={16} />
-          <input
+          {/* <input
             type="file"
             accept=".jpeg, .jpg, .png"
             className="hidden"
-            onChange={handleBackgroundImage}
-          />
+            onChange={handleBackgroundImageConfirm}
+          /> */}
         </label>
 
         <button

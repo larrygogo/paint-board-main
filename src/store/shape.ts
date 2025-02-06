@@ -28,7 +28,7 @@ const useShapeStore = create<ShapeState & ShapeAction>()(
       shapeStyle: ShapeStyle.Rect,
       borderType: ShapeBorderType.Solid,
       borderColor: '#000000',
-      borderWidth: 3,
+      borderWidth: 5,
       fillColor: '#FFFFFF',
       fillType: ShapeFillType.Transparent,
       shapeLinePointCount: 3,

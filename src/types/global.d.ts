@@ -10,8 +10,17 @@ interface Window {
       messageHandler: {
         postMessage: (message: string) => void
       }
+      requestBackground: {
+        postMessage: (message: string) => void
+      }
     }
   }
-  receiveImage: (imageUrl: string) => void
-  clearCanvasConfirm: () => void
+  receiveImage?: (imageUrl: string) => void
+  clearCanvasConfirm?: () => void
+}
+
+declare module 'fabric' {
+  interface Canvas {
+    __eventListeners: Record<string, Array<(...args: any[]) => void>>
+  }
 }

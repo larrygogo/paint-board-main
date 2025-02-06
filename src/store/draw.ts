@@ -48,7 +48,7 @@ interface DrawAction {
 const useDrawStore = create<DrawState & DrawAction>()(
   persist(
     (set, get) => ({
-      drawWidth: 10,
+      drawWidth: 5,
       drawColors: ['#000000'],
       shadowWidth: 0,
       shadowColor: '#000000',
