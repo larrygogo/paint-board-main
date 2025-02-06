@@ -15,8 +15,8 @@ export class CanvasEvent {
     const clickEvent = new CanvasClickEvent()
     this.clickEvent = clickEvent
 
-    const zoomEvent = new CanvasZoomEvent()
-    this.zoomEvent = zoomEvent
+    // const zoomEvent = new CanvasZoomEvent()
+    // this.zoomEvent = zoomEvent
 
     const objectEvent = new ObjectEvent()
     this.objectEvent = objectEvent

@@ -286,7 +286,7 @@ const ToolPanel: FC = () => {
             type="file"
             accept=".jpeg, .jpg, .png"
             className="hidden"
-            onChange={handleBackgroundImageConfirm}
+            onChange={handleBackgroundImage}
           /> */}
         </label>
 

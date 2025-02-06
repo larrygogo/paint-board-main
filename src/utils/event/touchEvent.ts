@@ -63,62 +63,15 @@ export class CanvasTouchEvent {
       this.startScale = canvas.getZoom()
     }
   }
+
   touchMoveFn = (e: TouchEvent) => {
     e.preventDefault()
-
     const canvas = paintBoard.canvas
     if (!canvas) {
       return
     }
-    const touches = e.touches
-
-    if (touches.length === 2) {
-      const touch1 = touches[0]
-      const touch2 = touches[1]
-
-      const currentDistance = Math.hypot(
-        touch2.pageX - touch1.pageX,
-        touch2.pageY - touch1.pageY
-      )
-
-      const x = (touch1.pageX + touch2.pageX) / 2
-      const y = (touch1.pageY + touch2.pageY) / 2
-
-      // Calculate zoom
-      let zoom = this.startScale * (currentDistance / this.startDistance)
-      zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom))
-      if (!useBoardStore.getState().isObjectCaching) {
-        fabric.Object.prototype.set({
-          objectCaching: true
-        })
-      }
-      canvas.zoomToPoint(new fabric.Point(this.startX, this.startY), zoom)
-      paintBoard.evnet?.zoomEvent.updateZoomPercentage(true, zoom)
-
-      // Calculate drag distance
-      const currentPan = new fabric.Point(x - this.startX, y - this.startY)
-
-      // move canvas
-      if (!this.isDragging) {
-        this.isDragging = true
-        this.lastPan = currentPan
-      } else if (this.lastPan) {
-        if (!useBoardStore.getState().isObjectCaching) {
-          fabric.Object.prototype.set({
-            objectCaching: true
-          })
-        }
-        canvas.relativePan(
-          new fabric.Point(
-            currentPan.x - this.lastPan.x,
-            currentPan.y - this.lastPan.y
-          )
-        )
-        this.lastPan = currentPan
-        this.saveTransform()
-      }
-    }
   }
+
   touchEndFn = (e: TouchEvent) => {
     this.isDragging = false
     if (this.isTwoTouch && e.touches.length === 0) {
