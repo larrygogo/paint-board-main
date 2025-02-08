@@ -1,6 +1,5 @@
 import { paintBoard } from '../paintBoard'
 import { fabric } from 'fabric'
-import { MAX_ZOOM, MIN_ZOOM } from './zoomEvent'
 import { debounce } from 'lodash'
 import { brushMouseMixin } from '../common/fabricMixin/brushMouse'
 import useFileStore from '@/store/files'

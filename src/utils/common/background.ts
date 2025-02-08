@@ -19,7 +19,7 @@ export const updateCanvasBackgroundImage = (data: string) => {
   }
   fabric.Image.fromURL(
     data,
-    (image) => {
+    (image: fabric.Image) => {
       updateCanvasBackgroundImageRect(image)
 
       canvas.setBackgroundImage(image, () => {
@@ -44,18 +44,23 @@ export const updateCanvasBackgroundImageRect = (image: fabric.Image) => {
   const imgWidth = image.width as number
   const imgHeight = image.height as number
 
-  const scaleWidth = canvasWidth / imgWidth
-  const scaleHeight = canvasHeight / imgHeight
+  // 计算最大正方形的边长
+  const size = Math.min(imgWidth, imgHeight)
 
-  const scale = Math.min(scaleWidth, scaleHeight)
-  image.scale(scale)
+  // 计算裁剪的起始位置，使其居中
+  const cropX = (imgWidth - size) / 2
+  const cropY = (imgHeight - size) / 2
 
-  const imgLeft = canvasWidth / 2 - (imgWidth * scale) / 2
-  const imgTop = canvasHeight / 2 - (imgHeight * scale) / 2
-
+  // 设置裁剪区域
   image.set({
-    left: imgLeft,
-    top: imgTop,
+    cropX: cropX,
+    cropY: cropY,
+    width: size,
+    height: size,
+    scaleX: canvasWidth / size,
+    scaleY: canvasHeight / size,
+    left: 0,
+    top: 0,
     originX: 'left',
     originY: 'top',
     opacity: useBoardStore.getState().backgroundImageOpacity
@@ -65,21 +70,68 @@ export const updateCanvasBackgroundImageRect = (image: fabric.Image) => {
 export const handleBackgroundImage = (url: string) => {
   if (!paintBoard.canvas) return
 
-  fabric.Image.fromURL(url, (img) => {
+  fabric.Image.fromURL(url, (img: fabric.Image) => {
     const canvas = paintBoard.canvas
     if (!canvas) return
 
-    // 设置图片铺满画布
-    img.scaleToWidth(canvas.width!)
-    img.scaleToHeight(canvas.height!)
+    const imgWidth = img.width as number
+    const imgHeight = img.height as number
 
-    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-      originX: 'left',
-      originY: 'top',
-      scaleX: canvas.width! / img.width!,
-      scaleY: canvas.height! / img.height!,
-      crossOrigin: 'anonymous'
-    })
-    canvas.renderAll()
+    // 计算最大正方形的边长
+    const size = Math.min(imgWidth, imgHeight)
+
+    // 计算裁剪的起始位置，使其居中
+    const cropX = (imgWidth - size) / 2
+    const cropY = (imgHeight - size) / 2
+
+    // 创建一个新的裁剪后的图像
+    const croppedCanvas = document.createElement('canvas')
+    croppedCanvas.width = size
+    croppedCanvas.height = size
+    const ctx = croppedCanvas.getContext('2d')
+    if (ctx) {
+      ctx.drawImage(
+        img.getElement(),
+        cropX,
+        cropY,
+        size,
+        size,
+        0,
+        0,
+        size,
+        size
+      )
+    }
+
+    fabric.Image.fromURL(
+      croppedCanvas.toDataURL(),
+      (croppedImg: fabric.Image) => {
+        const canvasWidth = canvas.getWidth()
+        const canvasHeight = canvas.getHeight()
+
+        // 设置缩放
+        croppedImg.set({
+          scaleX: canvasWidth / size,
+          scaleY: canvasHeight / size,
+          left: 0,
+          top: 0,
+          originX: 'left',
+          originY: 'top',
+          opacity: useBoardStore.getState().backgroundImageOpacity
+        })
+
+        canvas.setBackgroundImage(
+          croppedImg,
+          () => {
+            canvas.renderAll()
+            // 保存状态到历史记录
+            paintBoard.history?.saveState()
+          },
+          {
+            crossOrigin: 'anonymous'
+          }
+        )
+      }
+    )
   })
 }

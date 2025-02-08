@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useBoardStore from '@/store/board'
 
-import InfoIcon from '@/components/icons/info.svg?react'
 import ZoomInfo from '../zoomInfo'
 import Mask from '@/components/mask'
 import GuideInfoSwiper from './guideInfoSwiper'

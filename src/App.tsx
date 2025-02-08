@@ -1,11 +1,7 @@
 import Board from '@/pages/board'
 
 function App() {
-  return (
-    <div>
-      <Board />
-    </div>
-  )
+  return <Board />
 }
 
 export default App

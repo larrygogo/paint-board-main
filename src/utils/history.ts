@@ -51,14 +51,35 @@ export class History {
       const canvasJson = patch(this.canvasData, delta) as IBoardData
       canvas.loadFromJSON(canvasJson, () => {
         handleCanvasJSONLoaded(canvas)
-
         canvas.requestRenderAll()
         useFileStore.getState().updateBoardData(canvasJson)
         this.canvasData = cloneDeep(canvasJson ?? {})
         paintBoard.triggerHook()
+        handleBackgroundImageWhenCanvasSizeChange()
+        const backgroundImage = canvas.backgroundImage as fabric.Image
+        if (backgroundImage) {
+          const imgWidth = backgroundImage.width as number
+          const imgHeight = backgroundImage.height as number
+          const canvasWidth = canvas.getWidth()
+          const canvasHeight = canvas.getHeight()
 
-        if ((delta as unknown as IBoardData)?.backgroundImage) {
-          handleBackgroundImageWhenCanvasSizeChange()
+          const size = Math.min(imgWidth, imgHeight)
+          const cropX = (imgWidth - size) / 2
+          const cropY = (imgHeight - size) / 2
+
+          backgroundImage.set({
+            cropX: cropX,
+            cropY: cropY,
+            width: size,
+            height: size,
+            scaleX: canvasWidth / size,
+            scaleY: canvasHeight / size,
+            left: 0,
+            top: 0,
+            originX: 'left',
+            originY: 'top',
+            opacity: useBoardStore.getState().backgroundImageOpacity
+          })
         }
       })
     }
@@ -73,13 +94,34 @@ export class History {
       canvas.loadFromJSON(canvasJson, () => {
         handleCanvasJSONLoaded(canvas)
         canvas.requestRenderAll()
-
         useFileStore.getState().updateBoardData(canvasJson)
         this.canvasData = cloneDeep(canvasJson ?? {})
         paintBoard.triggerHook()
+        handleBackgroundImageWhenCanvasSizeChange()
+        const backgroundImage = canvas.backgroundImage as fabric.Image
+        if (backgroundImage) {
+          const imgWidth = backgroundImage.width as number
+          const imgHeight = backgroundImage.height as number
+          const canvasWidth = canvas.getWidth()
+          const canvasHeight = canvas.getHeight()
 
-        if ((delta as unknown as IBoardData)?.backgroundImage) {
-          handleBackgroundImageWhenCanvasSizeChange()
+          const size = Math.min(imgWidth, imgHeight)
+          const cropX = (imgWidth - size) / 2
+          const cropY = (imgHeight - size) / 2
+
+          backgroundImage.set({
+            cropX: cropX,
+            cropY: cropY,
+            width: size,
+            height: size,
+            scaleX: canvasWidth / size,
+            scaleY: canvasHeight / size,
+            left: 0,
+            top: 0,
+            originX: 'left',
+            originY: 'top',
+            opacity: useBoardStore.getState().backgroundImageOpacity
+          })
         }
       })
     }

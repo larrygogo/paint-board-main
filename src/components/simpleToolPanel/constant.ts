@@ -1,6 +1,5 @@
 import { ActionMode } from '@/constants'
 import { DrawType } from '@/constants/draw'
-import { DrawStyle } from '@/constants/draw'
 
 export const modeSwitch = [
   {

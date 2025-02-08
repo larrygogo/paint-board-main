@@ -1,12 +1,12 @@
 import { CanvasClickEvent } from './clickEvent'
 import { ObjectEvent } from './objectEvent'
 import { CanvasTouchEvent } from './touchEvent'
-import { CanvasZoomEvent } from './zoomEvent'
+// import { CanvasZoomEvent } from './zoomEvent'
 import { WindowEvent } from './windowEvent'
 
 export class CanvasEvent {
   clickEvent: CanvasClickEvent
-  zoomEvent: CanvasZoomEvent
+  // zoomEvent: CanvasZoomEvent
   objectEvent: ObjectEvent
   windowEvent: WindowEvent
   touchEvent: CanvasTouchEvent

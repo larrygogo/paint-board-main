@@ -1,34 +1,16 @@
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import useBoardStore from '@/store/board'
 import { useTranslation } from 'react-i18next'
 import { ActionMode } from '@/constants'
 import { paintBoard } from '@/utils/paintBoard'
-import {
-  Undo2,
-  Redo2,
-  Copy,
-  Trash2,
-  Upload,
-  Trash,
-  Save,
-  Files,
-  Delete,
-  Share2
-} from 'lucide-react'
-import { alignGuideLine } from '@/utils/common/fabricMixin/alignGuideLine'
+import { Undo2, Redo2, Trash2, Delete, Share2 } from 'lucide-react'
 
 import FileList from './fileList'
-import DownloadImage from './downloadImage'
-import UploadImage from './uploadImage'
 
 const BoardOperation = () => {
   const { t } = useTranslation()
   const { mode } = useBoardStore()
   const [showFile, updateShowFile] = useState(false)
-  const [downloadImageURL, setDownloadImageURL] = useState('')
-  const [showDownloadModal, setShowDownloadModal] = useState(false)
-  const [uploadImageURL, setUploadImageURL] = useState('')
-  const [showUploadModal, setShowUploadModal] = useState(false)
   // delete activity object
   const deleteObject = () => {
     paintBoard.deleteObject()
@@ -49,10 +31,10 @@ const BoardOperation = () => {
     if (paintBoard.canvas) {
       try {
         const url = paintBoard.executeWithoutListeners(() => {
-          return paintBoard.canvas!.toDataURL()
+          const dataUrl = paintBoard.canvas?.toDataURL()
+          return dataUrl || ''
         })
-        console.log(url)
-        if (window.webkit?.messageHandlers.messageHandler) {
+        if (url && window.webkit?.messageHandlers.messageHandler) {
           window.webkit.messageHandlers.messageHandler.postMessage(url)
         }
       } catch (error) {
@@ -117,18 +99,6 @@ const BoardOperation = () => {
       </div>
 
       {showFile && <FileList updateShow={updateShowFile} />}
-      {showDownloadModal && downloadImageURL && (
-        <DownloadImage
-          url={downloadImageURL}
-          showModal={showDownloadModal}
-          setShowModal={setShowDownloadModal}
-        />
-      )}
-      <UploadImage
-        url={uploadImageURL}
-        showModal={showUploadModal}
-        setShowModal={setShowUploadModal}
-      />
     </>
   )
 }

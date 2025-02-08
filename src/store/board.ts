@@ -10,9 +10,7 @@ import {
 import { paintBoard } from '@/utils/paintBoard'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { alignGuideLine } from '@/utils/common/fabricMixin/alignGuideLine'
 import {
-  updateCanvasBackgroundImage,
   handleBackgroundImageWhenCanvasSizeChange,
   handleBackgroundImage
 } from '@/utils/common/background'
@@ -220,7 +218,6 @@ const useBoardStore = create<BoardState & BoardAction>()(
         set({
           openGuideLine: newOpenGuideLine
         })
-        alignGuideLine.updateOpenState(newOpenGuideLine)
       }
     }),
     {

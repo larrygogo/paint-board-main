@@ -1,7 +1,6 @@
 import { fabric } from 'fabric'
 import 'fabric/src/mixins/eraser_brush.mixin.js'
 import { brushMouseMixin } from './common/fabricMixin/brushMouse'
-import { alignGuideLine } from './common/fabricMixin/alignGuideLine.js'
 
 import { History } from './history'
 import { ActionMode, ELEMENT_CUSTOM_TYPE } from '@/constants'
@@ -60,7 +59,7 @@ export class PaintBoard {
       if (isMobile()) {
         brushMouseMixin.initCanvas(this.canvas)
       }
-      alignGuideLine.init(this.canvas, useBoardStore.getState().openGuideLine)
+      // alignGuideLine.init(this.canvas, useBoardStore.getState().openGuideLine)
 
       this.evnet = new CanvasEvent()
       this.handleMode()
@@ -92,7 +91,9 @@ export class PaintBoard {
         localStorage.removeItem('PAINT-BOARD-FILES-STORE')
 
         this.canvas.clear()
-        this.canvas.setBackgroundColor('#FFFFFF', () => {})
+        this.canvas.setBackgroundColor('#FFFFFF', () => {
+          this.render()
+        })
 
         fabric.Object.prototype.set({
           objectCaching: useBoardStore.getState().isObjectCaching

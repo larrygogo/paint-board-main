@@ -14,7 +14,6 @@ import {
   Type,
   Image,
   Palette,
-  RefreshCw,
   ArrowLeftRight
 } from 'lucide-react'
 
@@ -28,20 +27,10 @@ import ColorPicker from '../colorPicker'
 const ToolPanel: FC = () => {
   const { mode, updateMode } = useBoardStore()
   const { drawType, updateDrawType, updateBackgroundImage } = useBoardStore()
-  const {
-    drawStyle,
-    updateDrawStyle,
-    updateDrawWidth,
-    updateEraserWidth,
-    updateDrawColors
-  } = useDrawStore()
-  const {
-    shapeStyle,
-    updateShapeStyle,
-    updateBorderWidth,
-    updateBorderColor,
-    borderColor
-  } = useShapeStore()
+  const { drawStyle, updateDrawStyle, updateEraserWidth, updateDrawColors } =
+    useDrawStore()
+  const { shapeStyle, updateShapeStyle, updateBorderColor, borderColor } =
+    useShapeStore()
   const [showShapePopover, setShowShapePopover] = useState(false)
   const popoverRef = useRef<HTMLDivElement>(null)
   const [showEraserConfig, setShowEraserConfig] = useState(false)
@@ -282,12 +271,12 @@ const ToolPanel: FC = () => {
           onClick={handleBackgroundImageConfirm}
         >
           <Image size={16} />
-          {/* <input
+          <input
             type="file"
             accept=".jpeg, .jpg, .png"
             className="hidden"
             onChange={handleBackgroundImage}
-          /> */}
+          />
         </label>
 
         <button
