@@ -88,12 +88,9 @@ const Board: React.FC = () => {
 
   return (
     <div className="fixed inset-0 bg-[#303030] overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center border-2 border-red-500">
-        <div className="relative border-2 border-blue-500">
-          <canvas
-            className="block touch-none border-2 border-green-500"
-            ref={canvasEl}
-          ></canvas>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <canvas className="block touch-none" ref={canvasEl}></canvas>
           {canvasLoaded && (
             <>
               <SimpleToolPanel />

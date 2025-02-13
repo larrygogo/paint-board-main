@@ -1,6 +1,6 @@
 import { fabric } from 'fabric'
 import 'fabric/src/mixins/eraser_brush.mixin.js'
-import { brushMouseMixin } from './common/fabricMixin/brushMouse'
+// import { brushMouseMixin } from './common/fabricMixin/brushMouse'
 
 import { History } from './history'
 import { ActionMode, ELEMENT_CUSTOM_TYPE } from '@/constants'
@@ -8,7 +8,7 @@ import { DrawStyle, DrawType } from '@/constants/draw'
 
 import { v4 as uuidv4 } from 'uuid'
 import { debounce } from 'lodash'
-import { isMobile } from './common'
+// import { isMobile } from './common'
 import { CanvasEvent } from './event'
 import { TextElement } from './element/text'
 import { material } from './element/draw/material'
