@@ -73,8 +73,11 @@ const Board: React.FC = () => {
     // 实现清空画布的全局方法
     window.clearCanvasConfirm = () => {
       if (paintBoard.canvas) {
-        paintBoard.canvas.clear()
-        paintBoard.canvas.renderAll()
+        const objects = paintBoard.canvas?.getObjects()
+        objects?.forEach((obj) => {
+          paintBoard.canvas?.remove(obj)
+        })
+
         paintBoard.history?.clean()
       }
     }
