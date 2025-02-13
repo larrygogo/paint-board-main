@@ -56,9 +56,9 @@ export class PaintBoard {
       fabric.Line.prototype.strokeLineJoin = 'round'
       fabric.Line.prototype.strokeLineCap = 'round'
 
-      if (isMobile()) {
-        brushMouseMixin.initCanvas(this.canvas)
-      }
+      // if (isMobile()) {
+      //   brushMouseMixin.initCanvas(this.canvas)
+      // }
       // alignGuideLine.init(this.canvas, useBoardStore.getState().openGuideLine)
 
       this.evnet = new CanvasEvent()

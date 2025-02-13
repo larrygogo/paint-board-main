@@ -14,7 +14,10 @@ const Board: React.FC = () => {
 
   const updateCanvasSize = () => {
     if (canvasEl.current && paintBoard.canvas) {
-      const size = Math.min(window.innerWidth, window.innerHeight, 512) - 20
+      // 使用视口高度的百分比来设置画布大小
+      const viewportHeight = window.innerHeight
+      const viewportWidth = window.innerWidth
+      const size = Math.min(viewportWidth * 0.9, viewportHeight * 0.9, 512)
 
       // 设置DOM canvas的尺寸
       canvasEl.current.width = size
@@ -31,7 +34,9 @@ const Board: React.FC = () => {
 
   useEffect(() => {
     if (canvasEl.current) {
-      const size = Math.min(window.innerWidth, window.innerHeight, 512) - 20
+      const viewportHeight = window.innerHeight
+      const viewportWidth = window.innerWidth
+      const size = Math.min(viewportWidth * 0.9, viewportHeight * 0.9, 512)
 
       // 设置canvas的实际尺寸
       canvasEl.current.width = size
@@ -71,7 +76,6 @@ const Board: React.FC = () => {
         paintBoard.canvas.clear()
         paintBoard.canvas.renderAll()
         paintBoard.history?.clean()
-        console.log(paintBoard.history?.index)
       }
     }
 
@@ -83,19 +87,24 @@ const Board: React.FC = () => {
   }, [updateBackgroundImage])
 
   return (
-    <div>
-      <div className="w-screen h-screen flex justify-center items-center bg-[#303030]">
-        <canvas className="block" ref={canvasEl}></canvas>
+    <div className="fixed inset-0 bg-[#303030] overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center border-2 border-red-500">
+        <div className="relative border-2 border-blue-500">
+          <canvas
+            className="block touch-none border-2 border-green-500"
+            ref={canvasEl}
+          ></canvas>
+          {canvasLoaded && (
+            <>
+              <SimpleToolPanel />
+              {/* <GuideInfo /> */}
+              <CleanModal />
+              <DeleteFileModal />
+              <BoardOperation />
+            </>
+          )}
+        </div>
       </div>
-      {canvasLoaded && (
-        <>
-          <SimpleToolPanel />
-          {/* <GuideInfo /> */}
-          <CleanModal />
-          <DeleteFileModal />
-          <BoardOperation />
-        </>
-      )}
     </div>
   )
 }
