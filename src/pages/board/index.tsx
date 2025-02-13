@@ -79,6 +79,7 @@ const Board: React.FC = () => {
         })
 
         paintBoard.history?.clean()
+        paintBoard.history?.initHistory()
       }
     }
 
