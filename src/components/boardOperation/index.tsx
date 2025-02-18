@@ -37,6 +37,9 @@ const BoardOperation = () => {
         if (url && window.webkit?.messageHandlers.messageHandler) {
           window.webkit.messageHandlers.messageHandler.postMessage(url)
         }
+        if (url && window.android?.messageHandler) {
+          window.android.messageHandler(JSON.stringify(`"${url}"`))
+        }
       } catch (error) {
         console.error('Failed to generate canvas data URL:', error)
       }
@@ -79,6 +82,9 @@ const BoardOperation = () => {
               window.webkit.messageHandlers.clearCanvas.postMessage(
                 'clearCanvas'
               )
+            }
+            if (window.android?.clearCanvas) {
+              window.android.clearCanvas(JSON.stringify(`"clearCanvas"`))
             }
           }}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 cursor-pointer"

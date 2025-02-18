@@ -173,6 +173,9 @@ const ToolPanel: FC = () => {
         'requestBackground'
       )
     }
+    if (window.android?.requestBackground) {
+      window.android.requestBackground('requestBackground')
+    }
   }
 
   // 获取当前激活的形状图标
@@ -333,6 +336,9 @@ const ToolPanel: FC = () => {
               window.webkit.messageHandlers.requestTransform.postMessage(
                 'transform'
               )
+            }
+            if (window.android?.requestTransform) {
+              window.android.requestTransform(JSON.stringify(`"transform"`))
             }
           }}
         >

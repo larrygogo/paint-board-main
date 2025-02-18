@@ -17,6 +17,12 @@ declare global {
         }
       }
     }
+    android?: {
+      clearCanvas: (message: string) => void
+      requestTransform: (message: string) => void
+      messageHandler: (message: string) => void
+      requestBackground: (message: string) => void
+    }
     receiveImage?: (imageUrl: string) => void
     clearCanvasConfirm?: () => void
   }
