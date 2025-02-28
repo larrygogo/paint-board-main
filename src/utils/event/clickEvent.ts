@@ -19,21 +19,6 @@ import { CircleShape } from '../element/shape/circle'
 import { LineShape } from '../element/shape/line'
 import { EllipseShape } from '../element/shape/ellipse'
 import { TriangleShape } from '../element/shape/triangle'
-import { ArrowOutlineShape } from '../element/shape/arrowOutline'
-import { CloudShape } from '../element/shape/cloud'
-import { TooltipsShape } from '../element/shape/tooltips'
-import { LightningShape } from '../element/shape/lightning'
-import { CloseShape } from '../element/shape/close'
-import { CheckShap } from '../element/shape/check'
-import { InfoShape } from '../element/shape/info'
-import { BackspaceShape } from '../element/shape/backspace'
-import { BlockShap } from '../element/shape/block'
-import { SpeakerShape } from '../element/shape/speaker'
-import { SearchShape } from '../element/shape/search'
-import { InfoOutlineShape } from '../element/shape/infoOutline'
-import { HeartShape } from '../element/shape/heart'
-import { AlertShape } from '../element/shape/alert'
-import { ArrowLineShape } from '../element/shape/arrowLine'
 
 import useDrawStore from '@/store/draw'
 import useBoardStore from '@/store/board'
@@ -58,21 +43,6 @@ export class CanvasClickEvent {
     | LineShape
     | EllipseShape
     | TriangleShape
-    | ArrowOutlineShape
-    | CloudShape
-    | TooltipsShape
-    | LightningShape
-    | CloseShape
-    | CheckShap
-    | InfoShape
-    | BackspaceShape
-    | BlockShap
-    | SpeakerShape
-    | SearchShape
-    | InfoOutlineShape
-    | HeartShape
-    | AlertShape
-    | ArrowLineShape
     | null = null // The current mouse move draws the element
 
   constructor() {
@@ -107,51 +77,6 @@ export class CanvasClickEvent {
               break
             case ShapeStyle.Triangle:
               currentElement = new TriangleShape(e.absolutePointer)
-              break
-            case ShapeStyle.ArrowLine:
-              currentElement = new ArrowLineShape(e.absolutePointer)
-              break
-            case ShapeStyle.ArrowOutline:
-              currentElement = new ArrowOutlineShape(e.absolutePointer)
-              break
-            case ShapeStyle.Cloud:
-              currentElement = new CloudShape(e.absolutePointer)
-              break
-            case ShapeStyle.Tooltips:
-              currentElement = new TooltipsShape(e.absolutePointer)
-              break
-            case ShapeStyle.Lightning:
-              currentElement = new LightningShape(e.absolutePointer)
-              break
-            case ShapeStyle.Close:
-              currentElement = new CloseShape(e.absolutePointer)
-              break
-            case ShapeStyle.Check:
-              currentElement = new CheckShap(e.absolutePointer)
-              break
-            case ShapeStyle.Info:
-              currentElement = new InfoShape(e.absolutePointer)
-              break
-            case ShapeStyle.Backspace:
-              currentElement = new BackspaceShape(e.absolutePointer)
-              break
-            case ShapeStyle.Block:
-              currentElement = new BlockShap(e.absolutePointer)
-              break
-            case ShapeStyle.Speaker:
-              currentElement = new SpeakerShape(e.absolutePointer)
-              break
-            case ShapeStyle.Search:
-              currentElement = new SearchShape(e.absolutePointer)
-              break
-            case ShapeStyle.InfoOutline:
-              currentElement = new InfoOutlineShape(e.absolutePointer)
-              break
-            case ShapeStyle.Heart:
-              currentElement = new HeartShape(e.absolutePointer)
-              break
-            case ShapeStyle.Alert:
-              currentElement = new AlertShape(e.absolutePointer)
               break
             default:
               break
@@ -201,7 +126,7 @@ export class CanvasClickEvent {
         }
 
         // two touch disabled drawing on mobile
-        if (paintBoard.evnet?.touchEvent.isTwoTouch) {
+        if (paintBoard.event?.touchEvent.isTwoTouch) {
           return
         }
 
@@ -227,10 +152,7 @@ export class CanvasClickEvent {
           }
         }
         if (!isDestroy) {
-          if (
-            this.currentElement instanceof LineShape ||
-            this.currentElement instanceof ArrowLineShape
-          ) {
+          if (this.currentElement instanceof LineShape) {
             this.currentElement?.mouseUp()
           }
           paintBoard.history?.saveState()

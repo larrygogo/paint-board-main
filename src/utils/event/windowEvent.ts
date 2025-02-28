@@ -2,9 +2,7 @@ import { KeyCode } from '@/constants/event'
 import { paintBoard } from '../paintBoard'
 import { ImageElement } from '../element/image'
 import { fabric } from 'fabric'
-import useFileStore from '@/store/files'
 import useBoardStore from '@/store/board'
-import { handleBackgroundImageWhenCanvasSizeChange } from '../common/background'
 
 export class WindowEvent {
   constructor() {
@@ -34,7 +32,7 @@ export class WindowEvent {
         /**
          * After pressing the SPACE key, change the mouse style, disable the drawing function, and open the drawing cache
          */
-        paintBoard?.evnet?.clickEvent.setSpaceKeyDownState(true)
+        paintBoard?.event?.clickEvent.setSpaceKeyDownState(true)
         if (canvas) {
           if (!useBoardStore.getState().isObjectCaching) {
             fabric.Object.prototype.set({
@@ -63,20 +61,9 @@ export class WindowEvent {
       /**
        * restores all states.
        */
-      paintBoard.evnet?.clickEvent.setSpaceKeyDownState(false)
+      paintBoard.event?.clickEvent.setSpaceKeyDownState(false)
       if (paintBoard.canvas) {
         paintBoard.canvas.defaultCursor = 'default'
-      }
-
-      const transform = paintBoard.canvas?.viewportTransform
-      if (transform) {
-        useFileStore.getState().updateTransform(transform)
-        if (!useBoardStore.getState().isObjectCaching) {
-          fabric.Object.prototype.set({
-            objectCaching: false
-          })
-        }
-        paintBoard.handleMode()
       }
     }
   }
@@ -111,11 +98,10 @@ export class WindowEvent {
   resizeFn() {
     const canvas = paintBoard.canvas
     if (canvas) {
-      canvas.setWidth(window.innerWidth * useBoardStore.getState().canvasWidth)
-      canvas.setHeight(
-        window.innerHeight * useBoardStore.getState().canvasHeight
-      )
-      handleBackgroundImageWhenCanvasSizeChange()
+      // canvas.setWidth(window.innerWidth * useBoardStore.getState().canvasWidth)
+      // canvas.setHeight(
+      //   window.innerHeight * useBoardStore.getState().canvasHeight
+      // )
     }
   }
 }

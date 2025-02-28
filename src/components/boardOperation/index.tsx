@@ -1,16 +1,14 @@
-import { useState } from 'react'
 import useBoardStore from '@/store/board'
 import { useTranslation } from 'react-i18next'
 import { ActionMode } from '@/constants'
 import { paintBoard } from '@/utils/paintBoard'
 import { Undo2, Redo2, Trash2, Delete, Share2 } from 'lucide-react'
 
-import FileList from './fileList'
+import OperationButton from './OperationButton'
 
 const BoardOperation = () => {
   const { t } = useTranslation()
   const { mode } = useBoardStore()
-  const [showFile, updateShowFile] = useState(false)
   // delete activity object
   const deleteObject = () => {
     paintBoard.deleteObject()
@@ -49,13 +47,11 @@ const BoardOperation = () => {
   return (
     <>
       <div className="fixed top-6 left-1/2 -translate-x-1/2 flex gap-1 bg-white rounded-lg shadow-xl p-1">
-        <button
+        <OperationButton
           onClick={undo}
-          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
+          icon={<Undo2 size={16} />}
           title={t('operate.undo').toString()}
-        >
-          <Undo2 size={16} />
-        </button>
+        />
         <button
           onClick={redo}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
@@ -103,8 +99,6 @@ const BoardOperation = () => {
           <Share2 size={16} />
         </button>
       </div>
-
-      {showFile && <FileList updateShow={updateShowFile} />}
     </>
   )
 }

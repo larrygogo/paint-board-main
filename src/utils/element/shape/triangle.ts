@@ -1,7 +1,7 @@
 import { fabric } from 'fabric'
 import { paintBoard } from '@/utils/paintBoard'
 import { setObjectAttr } from '@/utils/common/draw'
-import { getFillStyle, getShapeBorder, getShapeBorderWidth } from './utils'
+import { getShapeBorderWidth } from './utils'
 import useShapeStore from '@/store/shape'
 import { ELEMENT_CUSTOM_TYPE } from '@/constants'
 
@@ -23,12 +23,11 @@ export class TriangleShape {
       height: 0,
       stroke: useShapeStore.getState().borderColor,
       strokeWidth,
-      fill: getFillStyle(),
       strokeUniform: true,
       strokeLineCap: 'round',
-      strokeDashArray: getShapeBorder(strokeWidth),
       perPixelTargetFind: true,
-      strokeLineJoin: 'round'
+      strokeLineJoin: 'round',
+      fill: 'transparent'
     })
 
     paintBoard.canvas?.add(shape)

@@ -2,16 +2,6 @@ import { paintBoard } from '../paintBoard'
 import { fabric } from 'fabric'
 import useBoardStore from '@/store/board'
 
-export const handleBackgroundImageWhenCanvasSizeChange = (isRender = true) => {
-  const backgroundImage = paintBoard?.canvas?.backgroundImage as fabric.Image
-  if (backgroundImage) {
-    updateCanvasBackgroundImageRect(backgroundImage)
-    if (isRender) {
-      paintBoard.canvas?.requestRenderAll()
-    }
-  }
-}
-
 export const updateCanvasBackgroundImage = (data: string) => {
   const canvas = paintBoard.canvas
   if (!canvas) {

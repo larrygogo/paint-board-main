@@ -9,7 +9,7 @@ import useFileStore from '@/store/files'
 import { debounce } from 'lodash'
 
 let zoomHook: (zoom: number) => undefined
-export const MIN_ZOOM = 0.3
+export const MIN_ZOOM = 1
 export const MAX_ZOOM = 5
 
 export class CanvasZoomEvent {

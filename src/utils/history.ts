@@ -4,7 +4,6 @@ import { diff, unpatch, patch, Delta } from 'jsondiffpatch'
 import { cloneDeep } from 'lodash'
 import { getCanvasJSON, handleCanvasJSONLoaded } from './common/loadCanvas'
 import useBoardStore from '@/store/board'
-import { handleBackgroundImageWhenCanvasSizeChange } from './common/background'
 
 const initState = {}
 
@@ -55,7 +54,6 @@ export class History {
         useFileStore.getState().updateBoardData(canvasJson)
         this.canvasData = cloneDeep(canvasJson ?? {})
         paintBoard.triggerHook()
-        handleBackgroundImageWhenCanvasSizeChange()
         const backgroundImage = canvas.backgroundImage as fabric.Image
         if (backgroundImage) {
           const imgWidth = backgroundImage.width as number
@@ -97,7 +95,6 @@ export class History {
         useFileStore.getState().updateBoardData(canvasJson)
         this.canvasData = cloneDeep(canvasJson ?? {})
         paintBoard.triggerHook()
-        handleBackgroundImageWhenCanvasSizeChange()
         const backgroundImage = canvas.backgroundImage as fabric.Image
         if (backgroundImage) {
           const imgWidth = backgroundImage.width as number

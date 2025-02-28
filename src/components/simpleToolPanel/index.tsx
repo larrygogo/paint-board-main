@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, useRef, ChangeEvent } from 'react'
 import useBoardStore from '@/store/board'
 import { ActionMode } from '@/constants'
-import { ShapeStyle } from './constant'
+import { ShapeStyle } from '@/constants/shape'
 import {
   Pencil,
   Square,

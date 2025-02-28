@@ -10,10 +10,7 @@ import {
 import { paintBoard } from '@/utils/paintBoard'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import {
-  handleBackgroundImageWhenCanvasSizeChange,
-  handleBackgroundImage
-} from '@/utils/common/background'
+import { handleBackgroundImage } from '@/utils/common/background'
 
 interface BoardState {
   mode: string // operating mode
@@ -115,7 +112,6 @@ const useBoardStore = create<BoardState & BoardAction>()(
         const backgroundImage = paintBoard?.canvas
           ?.backgroundImage as fabric.Image
         if (backgroundImage) {
-          handleBackgroundImageWhenCanvasSizeChange()
           set({
             hasBackgroundImage: true,
             backgroundOpacity: backgroundImage.opacity
@@ -133,7 +129,6 @@ const useBoardStore = create<BoardState & BoardAction>()(
           set({
             canvasWidth: width
           })
-          paintBoard.updateCanvasWidth(width)
         }
       },
       updateCanvasHeight: (height) => {
@@ -142,7 +137,6 @@ const useBoardStore = create<BoardState & BoardAction>()(
           set({
             canvasHeight: height
           })
-          paintBoard.updateCanvasHeight(height)
         }
       },
       updateBackgroundColor: (color) => {

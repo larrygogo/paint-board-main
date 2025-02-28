@@ -1,23 +1,18 @@
 import { fabric } from 'fabric'
 import 'fabric/src/mixins/eraser_brush.mixin.js'
-// import { brushMouseMixin } from './common/fabricMixin/brushMouse'
 
 import { History } from './history'
 import { ActionMode, ELEMENT_CUSTOM_TYPE } from '@/constants'
 import { DrawStyle, DrawType } from '@/constants/draw'
 
 import { v4 as uuidv4 } from 'uuid'
-import { debounce } from 'lodash'
-// import { isMobile } from './common'
 import { CanvasEvent } from './event'
 import { TextElement } from './element/text'
 import { material } from './element/draw/material'
 import { renderMultiColor } from './element/draw/multiColor'
 import { renderPencilBrush } from './element/draw/basic'
 import { getEraserWidth } from './common/draw'
-import { handleBackgroundImageWhenCanvasSizeChange } from './common/background'
 
-import useFileStore from '@/store/files'
 import useDrawStore from '@/store/draw'
 import useBoardStore from '@/store/board'
 
@@ -26,54 +21,67 @@ import useBoardStore from '@/store/board'
  */
 export class PaintBoard {
   canvas: fabric.Canvas | null = null
-  evnet: CanvasEvent | null = null
+  event: CanvasEvent | null = null
   history: History | null = null
-  textElement: TextElement
-  hookFn: Array<() => void> = []
+  readonly textElement: TextElement
+  readonly hookFn: Array<() => void> = []
+
+  private static readonly DEFAULT_SETTINGS: fabric.ICanvasOptions = {
+    selectionColor: 'rgba(101, 204, 138, 0.3)', // 选中颜色
+    preserveObjectStacking: true, // 保持对象堆叠
+    enableRetinaScaling: true, // 启用视网膜缩放
+    backgroundVpt: false, // 背景视图转换
+    backgroundColor: '#FFFFFF', // 背景颜色
+    width: 640, // 固定宽度
+    height: 640 // 固定高度
+  }
 
   constructor() {
     this.textElement = new TextElement()
   }
 
-  initCanvas(canvasEl: HTMLCanvasElement) {
+  /**
+   * 初始化画布
+   * @param canvasEl 画布元素
+   * @returns 是否初始化成功
+   */
+  initCanvas(canvasEl: HTMLCanvasElement): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
       this.canvas = new fabric.Canvas(canvasEl, {
-        selectionColor: 'rgba(101, 204, 138, 0.3)',
-        preserveObjectStacking: true,
-        enableRetinaScaling: true,
-        backgroundVpt: false,
-        width: canvasEl.width,
-        height: canvasEl.height,
-        backgroundColor: '#FFFFFF'
+        ...PaintBoard.DEFAULT_SETTINGS
       })
-      fabric.Object.prototype.set({
-        borderColor: '#65CC8A',
-        cornerColor: '#65CC8A',
-        cornerStyle: 'circle',
-        borderDashArray: [3, 3],
-        transparentCorners: false
-      })
-      fabric.Line.prototype.strokeLineJoin = 'round'
-      fabric.Line.prototype.strokeLineCap = 'round'
 
-      // if (isMobile()) {
-      //   brushMouseMixin.initCanvas(this.canvas)
-      // }
-      // alignGuideLine.init(this.canvas, useBoardStore.getState().openGuideLine)
-
-      this.evnet = new CanvasEvent()
+      this.initObjectPrototypes()
+      this.event = new CanvasEvent()
       this.handleMode()
 
       await this.initCanvasStorage()
-
       resolve(true)
     })
+  }
+
+  /**
+   * 初始化对象原型
+   */
+  private initObjectPrototypes(): void {
+    if (!this.canvas) return
+
+    fabric.Object.prototype.set({
+      borderColor: '#65CC8A',
+      cornerColor: '#65CC8A',
+      cornerStyle: 'circle',
+      borderDashArray: [3, 3],
+      transparentCorners: false
+    })
+
+    fabric.Line.prototype.strokeLineJoin = 'round'
+    fabric.Line.prototype.strokeLineCap = 'round'
   }
 
   removeCanvas() {
     if (this.canvas) {
       this?.canvas?.dispose()
-      this.evnet?.removeEvent()
+      this.event?.removeEvent()
       this.canvas = null
     }
   }
@@ -107,8 +115,8 @@ export class PaintBoard {
   }
 
   /**
-   * handle mode of operation
-   * @param mode current mode
+   * 处理操作模式
+   * @param mode 当前模式
    */
   handleMode(mode: string = useBoardStore.getState().mode) {
     if (!this.canvas) {
@@ -167,7 +175,7 @@ export class PaintBoard {
   }
 
   /**
-   * handle draw style
+   * 处理绘制样式
    */
   handleDrawStyle() {
     if (!this.canvas) {
@@ -192,27 +200,21 @@ export class PaintBoard {
   }
 
   /**
-   * delete active objects
+   * 删除活动对象
    */
-  deleteObject() {
-    // Disable deletion in text input state
-    if (this.textElement.isTextEditing) {
-      return
-    }
-    if (this.canvas) {
-      const activeObjects = this.canvas.getActiveObjects()
-      if (activeObjects?.length) {
-        this.canvas.discardActiveObject()
-        activeObjects?.forEach((obj) => {
-          this.canvas?.remove(obj)
-        })
-        this.render()
-      }
-    }
+  deleteObject(): void {
+    if (!this.canvas || this.textElement.isTextEditing) return
+
+    const activeObjects = this.canvas.getActiveObjects()
+    if (!activeObjects?.length) return
+
+    this.canvas.discardActiveObject()
+    activeObjects.forEach((obj) => this.canvas?.remove(obj))
+    this.render()
   }
 
   /**
-   * render and save history state
+   * 渲染并保存历史状态
    */
   render() {
     if (this.canvas) {
@@ -222,45 +224,47 @@ export class PaintBoard {
   }
 
   /**
-   * copy active objects
+   * 复制活动对象
    */
-  copyObject() {
-    const canvas = this.canvas
-    if (!canvas) {
-      return
-    }
-    const targets = canvas.getActiveObjects()
-    if (targets.length <= 0) {
-      return
-    }
-    canvas.discardActiveObject()
-    const copys = targets.map((target) => {
-      return new Promise<fabric.Object>((resolve) => {
-        target?.clone((cloned: fabric.Object) => {
-          const id = uuidv4()
-          cloned.set({
-            left: (cloned?.left || 0) + 10,
-            top: (cloned?.top || 0) + 10,
-            evented: true,
-            id,
-            perPixelTargetFind: true
-          })
-          resolve(cloned)
-          canvas.add(cloned)
-        })
-      })
+  async copyObject(): Promise<void> {
+    if (!this.canvas) return
+
+    const targets = this.canvas.getActiveObjects()
+    if (targets.length <= 0) return
+
+    this.canvas.discardActiveObject()
+
+    const copiedObjects = await Promise.all(
+      targets.map((target) => this.cloneObject(target))
+    )
+
+    const activeSelection = new fabric.ActiveSelection(copiedObjects, {
+      canvas: this.canvas
     })
-    Promise.all(copys).then((objs) => {
-      const activeSelection = new fabric.ActiveSelection(objs, {
-        canvas: canvas
+
+    this.canvas.setActiveObject(activeSelection)
+    this.render()
+  }
+
+  private cloneObject(target: fabric.Object): Promise<fabric.Object> {
+    return new Promise((resolve) => {
+      target?.clone((cloned: fabric.Object) => {
+        const id = uuidv4()
+        cloned.set({
+          left: (cloned?.left || 0) + 10,
+          top: (cloned?.top || 0) + 10,
+          evented: true,
+          id,
+          perPixelTargetFind: true
+        })
+        this.canvas?.add(cloned)
+        resolve(cloned)
       })
-      canvas.setActiveObject(activeSelection)
-      this.render()
     })
   }
 
   /**
-   * Moving active objects via fabric's bringForward method
+   * 通过 fabric 的 bringForward 方法移动活动对象
    */
   bringForWard() {
     const canvas = this.canvas
@@ -274,7 +278,7 @@ export class PaintBoard {
   }
 
   /**
-   * Moving active objects via fabric's sendBackwards method
+   * 通过 fabric 的 sendBackwards 方法移动活动对象
    */
   seendBackWard() {
     const canvas = this.canvas
@@ -288,7 +292,7 @@ export class PaintBoard {
   }
 
   /**
-   * Moving active objects via fabric's bringToFront method
+   * 通过 fabric 的 bringToFront 方法移动活动对象
    */
   bringToFront() {
     const canvas = this.canvas
@@ -302,7 +306,7 @@ export class PaintBoard {
   }
 
   /**
-   * Moving active objects via fabric's sendToBack method
+   * 通过 fabric 的 sendToBack 方法移动活动对象
    */
   sendToBack() {
     const canvas = this.canvas
@@ -316,16 +320,16 @@ export class PaintBoard {
   }
 
   /**
-   * Add hook fn to trigger on update
-   * @param fn hook fn
+   * 添加钩子函数以在更新时触发
+   * @param fn 钩子函数
    */
   addHookFn(fn: () => void) {
     this.hookFn.push(fn)
   }
 
   /**
-   * remove trigger hook fn
-   * @param fn hook fn
+   * 移除触发钩子函数
+   * @param fn 钩子函数
    */
   removeHookFn(fn: () => void) {
     const hookIndex = this.hookFn.findIndex((v) => v === fn)
@@ -335,7 +339,7 @@ export class PaintBoard {
   }
 
   /**
-   * trigger hook fn
+   * 触发钩子函数
    */
   triggerHook() {
     this.hookFn.map((fn) => {
@@ -343,23 +347,11 @@ export class PaintBoard {
     })
   }
 
-  updateCanvasWidth = debounce((width) => {
-    if (this.canvas) {
-      this.canvas.setWidth(window.innerWidth * width)
-      handleBackgroundImageWhenCanvasSizeChange()
-      useFileStore.getState().updateCanvasWidth(width)
-    }
-  }, 500)
-
-  updateCanvasHeight = debounce((height) => {
-    if (this.canvas) {
-      this.canvas.setHeight(window.innerHeight * height)
-      handleBackgroundImageWhenCanvasSizeChange()
-      useFileStore.getState().updateCanvasHeight(height)
-    }
-  }, 500)
-
-  // 临时禁用所有事件监听并执行回调
+  /**
+   * 临时禁用所有事件监听并执行回调
+   * @param callback 回调
+   * @returns 回调结果
+   */
   executeWithoutListeners<T>(callback: () => T): T {
     if (!this.canvas) {
       throw new Error('Canvas is not initialized')

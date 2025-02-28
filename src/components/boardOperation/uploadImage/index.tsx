@@ -14,6 +14,7 @@ import { cropTransparent } from '@/utils/common/cropTransparent'
 import Mask from '@/components/mask'
 import ImageSegmentation from './imageSegmentation'
 import InfoOutline from '@/components/icons/info-outline.svg?react'
+import { paintBoard } from '@/utils/paintBoard'
 
 interface IProps {
   url: string
@@ -47,22 +48,22 @@ const UploadImage: FC<IProps> = ({ url, showModal, setShowModal }) => {
   const processorRef = useRef<Processor>()
 
   const removeBackgroundBtnTip = useMemo(() => {
-    switch (removeBackgroundStatus) {
-      case REMOVE_BACKGROUND_STATUS.LOADING:
-        return 'uploadImage.removeBackgroundLoading'
-      case REMOVE_BACKGROUND_STATUS.NO_SUPPORT_WEBGPU:
-        return 'uploadImage.removeBackgroundGpuTip'
-      case REMOVE_BACKGROUND_STATUS.LOAD_ERROR:
-        return 'uploadImage.removeBackgroundFailed'
-      case REMOVE_BACKGROUND_STATUS.LOAD_SUCCESS:
-        return 'uploadImage.removeBackgroundSuccess'
-      case REMOVE_BACKGROUND_STATUS.PROCESSING:
-        return 'uploadImage.removeBackgroundProcessing'
-      case REMOVE_BACKGROUND_STATUS.PROCESSING_SUCCESS:
-        return 'uploadImage.removeBackgroundProcessingSuccess'
-      default:
-        return ''
+    const statusMessages = {
+      [REMOVE_BACKGROUND_STATUS.LOADING]: 'uploadImage.removeBackgroundLoading',
+      [REMOVE_BACKGROUND_STATUS.NO_SUPPORT_WEBGPU]:
+        'uploadImage.removeBackgroundGpuTip',
+      [REMOVE_BACKGROUND_STATUS.LOAD_ERROR]:
+        'uploadImage.removeBackgroundFailed',
+      [REMOVE_BACKGROUND_STATUS.LOAD_SUCCESS]:
+        'uploadImage.removeBackgroundSuccess',
+      [REMOVE_BACKGROUND_STATUS.PROCESSING]:
+        'uploadImage.removeBackgroundProcessing',
+      [REMOVE_BACKGROUND_STATUS.PROCESSING_SUCCESS]:
+        'uploadImage.removeBackgroundProcessingSuccess'
     }
+    return removeBackgroundStatus
+      ? statusMessages[removeBackgroundStatus] || ''
+      : ''
   }, [removeBackgroundStatus])
 
   useEffect(() => {
@@ -159,12 +160,35 @@ const UploadImage: FC<IProps> = ({ url, showModal, setShowModal }) => {
 
   const uploadImage = () => {
     const image = new ImageElement()
+    const canvas = paintBoard.canvas
+
+    if (!canvas) return
+
+    const adjustImageSize = (imgSrc: string) => {
+      const img = new Image()
+      img.src = imgSrc
+      img.onload = () => {
+        const scale = Math.min(
+          canvas.width / img.width,
+          canvas.height / img.height
+        )
+        const width = img.width * scale
+        const height = img.height * scale
+        image.addImage(imgSrc, {
+          width,
+          height,
+          lockMovementX: true,
+          lockMovementY: true
+        })
+      }
+    }
+
     if (showOriginImage) {
-      image.addImage(url)
+      adjustImageSize(url)
       handleCancel()
     } else if (processedImage) {
       cropTransparent(processedImage).then((url) => {
-        image.addImage(url)
+        adjustImageSize(url)
       })
       handleCancel()
     }
