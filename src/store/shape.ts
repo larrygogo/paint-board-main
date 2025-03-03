@@ -1,6 +1,5 @@
 import { ShapeStyle } from '@/constants/shape'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 interface ShapeState {
   shapeStyle: string // shape style
@@ -16,50 +15,43 @@ interface ShapeAction {
   updateShapeLinePointCount: (count: number) => void
 }
 
-const useShapeStore = create<ShapeState & ShapeAction>()(
-  persist(
-    (set, get) => ({
-      shapeStyle: ShapeStyle.Rect,
-      borderColor: '#FF0000',
-      borderWidth: 5,
-      shapeLinePointCount: 3,
-      updateShapeStyle(shapeStyle) {
-        const oldShapeStyle = get().shapeStyle
-        if (oldShapeStyle !== shapeStyle) {
-          set({
-            shapeStyle
-          })
-        }
-      },
-      updateBorderColor: (borderColor) => {
-        const oldBorderColor = get().borderColor
-        if (oldBorderColor !== borderColor) {
-          set({
-            borderColor
-          })
-        }
-      },
-      updateBorderWidth: (borderWidth) => {
-        const oldBorderWidth = get().borderWidth
-        if (oldBorderWidth !== borderWidth) {
-          set({
-            borderWidth
-          })
-        }
-      },
-      updateShapeLinePointCount(count) {
-        const oldCount = get().shapeLinePointCount
-        if (count !== oldCount) {
-          set({
-            shapeLinePointCount: count
-          })
-        }
-      }
-    }),
-    {
-      name: 'PAINT-BOARD-SHAPE-STORE'
+const useShapeStore = create<ShapeState & ShapeAction>()((set, get) => ({
+  shapeStyle: ShapeStyle.Rect,
+  borderColor: '#FF0000',
+  borderWidth: 5,
+  shapeLinePointCount: 3,
+  updateShapeStyle(shapeStyle) {
+    const oldShapeStyle = get().shapeStyle
+    if (oldShapeStyle !== shapeStyle) {
+      set({
+        shapeStyle
+      })
     }
-  )
-)
+  },
+  updateBorderColor: (borderColor) => {
+    const oldBorderColor = get().borderColor
+    if (oldBorderColor !== borderColor) {
+      set({
+        borderColor
+      })
+    }
+  },
+  updateBorderWidth: (borderWidth) => {
+    const oldBorderWidth = get().borderWidth
+    if (oldBorderWidth !== borderWidth) {
+      set({
+        borderWidth
+      })
+    }
+  },
+  updateShapeLinePointCount(count) {
+    const oldCount = get().shapeLinePointCount
+    if (count !== oldCount) {
+      set({
+        shapeLinePointCount: count
+      })
+    }
+  }
+}))
 
 export default useShapeStore

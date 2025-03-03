@@ -9,7 +9,6 @@ import {
 } from '@/utils/common/color'
 import { paintBoard } from '@/utils/paintBoard'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { handleBackgroundImage } from '@/utils/common/background'
 
 interface BoardState {
@@ -46,177 +45,169 @@ const initLanguage = ['en', 'en-US', 'en-us'].includes(navigator.language)
   ? 'en'
   : 'zh'
 
-const useBoardStore = create<BoardState & BoardAction>()(
-  persist(
-    (set, get) => ({
-      mode: ActionMode.DRAW,
-      drawType: DrawType.FreeStyle,
-      language: initLanguage,
-      canvasWidth: 1,
-      canvasHeight: 1,
-      backgroundColor: 'rgba(255, 255, 255, 1)',
-      backgroundOpacity: 1,
-      hasBackgroundImage: false,
-      backgroundImageOpacity: 1,
-      isObjectCaching: true,
-      openGuideLine: false,
-      updateMode: (mode) => {
-        const oldMode = get().mode
-        if (oldMode !== mode) {
-          paintBoard.handleMode(mode)
-          set({
-            mode
-          })
-        }
-      },
-      updateDrawType: (drawType) => {
-        const oldDrawType = get().drawType
-        if (oldDrawType !== drawType) {
-          set({
-            drawType
-          })
-          paintBoard.handleMode()
-        }
-      },
-      updateLanguage(language) {
+const useBoardStore = create<BoardState & BoardAction>()((set, get) => ({
+  mode: ActionMode.DRAW,
+  drawType: DrawType.FreeStyle,
+  language: initLanguage,
+  canvasWidth: 1,
+  canvasHeight: 1,
+  backgroundColor: 'rgba(255, 255, 255, 1)',
+  backgroundOpacity: 1,
+  hasBackgroundImage: false,
+  backgroundImageOpacity: 1,
+  isObjectCaching: true,
+  openGuideLine: false,
+  updateMode: (mode) => {
+    const oldMode = get().mode
+    if (oldMode !== mode) {
+      paintBoard.handleMode(mode)
+      set({
+        mode
+      })
+    }
+  },
+  updateDrawType: (drawType) => {
+    const oldDrawType = get().drawType
+    if (oldDrawType !== drawType) {
+      set({
+        drawType
+      })
+      paintBoard.handleMode()
+    }
+  },
+  updateLanguage(language) {
+    set({
+      language
+    })
+  },
+  initBackground: () => {
+    const backgroundColor = paintBoard?.canvas?.backgroundColor
+    if (backgroundColor && typeof backgroundColor === 'string') {
+      const type = getColorFormat(backgroundColor)
+      if (type === 'hex') {
+        const color = hexToRgba(backgroundColor)
+        const opacity = getAlphaFromRgba(color)
         set({
-          language
+          backgroundColor: color,
+          backgroundOpacity: opacity
         })
-      },
-      initBackground: () => {
-        const backgroundColor = paintBoard?.canvas?.backgroundColor
-        if (backgroundColor && typeof backgroundColor === 'string') {
-          const type = getColorFormat(backgroundColor)
-          if (type === 'hex') {
-            const color = hexToRgba(backgroundColor)
-            const opacity = getAlphaFromRgba(color)
-            set({
-              backgroundColor: color,
-              backgroundOpacity: opacity
-            })
-          } else if (type === 'rgba') {
-            const opacity = getAlphaFromRgba(backgroundColor)
-            set({
-              backgroundColor: backgroundColor,
-              backgroundOpacity: opacity
-            })
-          }
-        } else if (paintBoard?.canvas) {
-          paintBoard.canvas.backgroundColor = 'rgba(255, 255, 255, 1)'
-          set({
-            backgroundColor: 'rgba(255, 255, 255, 1)',
-            backgroundOpacity: 1
-          })
-        }
-
-        const backgroundImage = paintBoard?.canvas
-          ?.backgroundImage as fabric.Image
-        if (backgroundImage) {
-          set({
-            hasBackgroundImage: true,
-            backgroundOpacity: backgroundImage.opacity
-          })
-        } else {
-          set({
-            hasBackgroundImage: false,
-            backgroundOpacity: 1
-          })
-        }
-      },
-      updateCanvasWidth: (width) => {
-        const oldWidth = get().canvasWidth
-        if (oldWidth !== width) {
-          set({
-            canvasWidth: width
-          })
-        }
-      },
-      updateCanvasHeight: (height) => {
-        const oldHeight = get().canvasHeight
-        if (oldHeight !== height) {
-          set({
-            canvasHeight: height
-          })
-        }
-      },
-      updateBackgroundColor: (color) => {
-        const canvas = paintBoard.canvas
-        if (canvas && color !== canvas?.backgroundColor) {
-          set((state) => {
-            const bgColor = hexToRgba(color, state.backgroundOpacity)
-            canvas.backgroundColor = bgColor
-            return {
-              backgroundColor: bgColor
-            }
-          })
-        }
-      },
-      updateBackgroundOpacity: (opacity) => {
-        set((state) => {
-          const canvas = paintBoard.canvas
-          if (canvas && opacity !== state.backgroundOpacity) {
-            const newColor = changeAlpha(state.backgroundColor, opacity)
-            canvas.backgroundColor = newColor
-            return {
-              backgroundOpacity: opacity,
-              backgroundColor: newColor
-            }
-          }
-          return {}
-        })
-      },
-      updateBackgroundImage: (url: string) => {
-        handleBackgroundImage(url)
-      },
-      cleanBackgroundImage: () => {
+      } else if (type === 'rgba') {
+        const opacity = getAlphaFromRgba(backgroundColor)
         set({
-          hasBackgroundImage: false
-        })
-        const canvas = paintBoard.canvas
-        if (canvas) {
-          canvas.setBackgroundImage(null as unknown as string, () => {
-            paintBoard.render()
-          })
-        }
-      },
-      updateBackgroundImageOpacity: (opacity) => {
-        set((state) => {
-          const canvas = paintBoard.canvas
-          if (canvas && opacity !== state.backgroundImageOpacity) {
-            const backgroundImage = canvas?.backgroundImage as fabric.Image
-            if (backgroundImage) {
-              backgroundImage.set({
-                opacity
-              })
-            }
-
-            return {
-              backgroundImageOpacity: opacity
-            }
-          }
-          return {}
-        })
-      },
-      updateCacheState() {
-        const oldCacheState = get().isObjectCaching
-        set({
-          isObjectCaching: !oldCacheState
-        })
-        fabric.Object.prototype.set({
-          objectCaching: useBoardStore.getState().isObjectCaching
-        })
-        paintBoard?.canvas?.renderAll()
-      },
-      updateOpenGuideLine() {
-        const newOpenGuideLine = !get().openGuideLine
-        set({
-          openGuideLine: newOpenGuideLine
+          backgroundColor: backgroundColor,
+          backgroundOpacity: opacity
         })
       }
-    }),
-    {
-      name: 'PAINT-BOARD-STORE'
+    } else if (paintBoard?.canvas) {
+      paintBoard.canvas.backgroundColor = 'rgba(255, 255, 255, 1)'
+      set({
+        backgroundColor: 'rgba(255, 255, 255, 1)',
+        backgroundOpacity: 1
+      })
     }
-  )
-)
+
+    const backgroundImage = paintBoard?.canvas?.backgroundImage as fabric.Image
+    if (backgroundImage) {
+      set({
+        hasBackgroundImage: true,
+        backgroundOpacity: backgroundImage.opacity
+      })
+    } else {
+      set({
+        hasBackgroundImage: false,
+        backgroundOpacity: 1
+      })
+    }
+  },
+  updateCanvasWidth: (width) => {
+    const oldWidth = get().canvasWidth
+    if (oldWidth !== width) {
+      set({
+        canvasWidth: width
+      })
+    }
+  },
+  updateCanvasHeight: (height) => {
+    const oldHeight = get().canvasHeight
+    if (oldHeight !== height) {
+      set({
+        canvasHeight: height
+      })
+    }
+  },
+  updateBackgroundColor: (color) => {
+    const canvas = paintBoard.canvas
+    if (canvas && color !== canvas?.backgroundColor) {
+      set((state) => {
+        const bgColor = hexToRgba(color, state.backgroundOpacity)
+        canvas.backgroundColor = bgColor
+        return {
+          backgroundColor: bgColor
+        }
+      })
+    }
+  },
+  updateBackgroundOpacity: (opacity) => {
+    set((state) => {
+      const canvas = paintBoard.canvas
+      if (canvas && opacity !== state.backgroundOpacity) {
+        const newColor = changeAlpha(state.backgroundColor, opacity)
+        canvas.backgroundColor = newColor
+        return {
+          backgroundOpacity: opacity,
+          backgroundColor: newColor
+        }
+      }
+      return {}
+    })
+  },
+  updateBackgroundImage: (url: string) => {
+    handleBackgroundImage(url)
+  },
+  cleanBackgroundImage: () => {
+    set({
+      hasBackgroundImage: false
+    })
+    const canvas = paintBoard.canvas
+    if (canvas) {
+      canvas.setBackgroundImage(null as unknown as string, () => {
+        paintBoard.render()
+      })
+    }
+  },
+  updateBackgroundImageOpacity: (opacity) => {
+    set((state) => {
+      const canvas = paintBoard.canvas
+      if (canvas && opacity !== state.backgroundImageOpacity) {
+        const backgroundImage = canvas?.backgroundImage as fabric.Image
+        if (backgroundImage) {
+          backgroundImage.set({
+            opacity
+          })
+        }
+
+        return {
+          backgroundImageOpacity: opacity
+        }
+      }
+      return {}
+    })
+  },
+  updateCacheState() {
+    const oldCacheState = get().isObjectCaching
+    set({
+      isObjectCaching: !oldCacheState
+    })
+    fabric.Object.prototype.set({
+      objectCaching: useBoardStore.getState().isObjectCaching
+    })
+    paintBoard?.canvas?.renderAll()
+  },
+  updateOpenGuideLine() {
+    const newOpenGuideLine = !get().openGuideLine
+    set({
+      openGuideLine: newOpenGuideLine
+    })
+  }
+}))
 export default useBoardStore

@@ -85,20 +85,6 @@ const ToolPanel: FC = () => {
     }
   }, [mode])
 
-  // 添加 ESC 键监听
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setShowColorPicker(false)
-      }
-    }
-
-    document.addEventListener('keydown', handleEscKey)
-    return () => {
-      document.removeEventListener('keydown', handleEscKey)
-    }
-  }, [])
-
   const shapeButtons = [
     {
       icon: <Square size={16} />,

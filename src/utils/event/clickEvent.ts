@@ -1,18 +1,8 @@
 import { fabric } from 'fabric'
 import { ActionMode } from '@/constants'
-import { DrawStyle, DrawType } from '@/constants/draw'
+import { DrawType } from '@/constants/draw'
 import { ShapeStyle } from '@/constants/shape'
 import { paintBoard } from '../paintBoard'
-
-import { ReticulateElement } from '../element/draw/reticulate'
-import { ShapeElement } from '../element/draw/shape'
-import { PixelsElement } from '../element/draw/pixels'
-import { DrawTextElement } from '../element/draw/text'
-import { MultiLineElement } from '../element/draw/multiLine'
-import { RainbowElement } from '../element/draw/rainbow'
-import { ThornElement } from '../element/draw/thorn'
-import { MultiPointElement } from '../element/draw/multiPoint'
-import { WiggleElement } from '../element/draw/wiggle'
 
 import { RectShape } from '../element/shape/rect'
 import { CircleShape } from '../element/shape/circle'
@@ -26,18 +16,8 @@ import useShapeStore from '@/store/shape'
 
 export class CanvasClickEvent {
   isMouseDown = false
-  isSpaceKeyDown = false
   startPoint: fabric.Point | undefined
   currentElement:
-    | ShapeElement
-    | PixelsElement
-    | DrawTextElement
-    | MultiLineElement
-    | ReticulateElement
-    | RainbowElement
-    | ThornElement
-    | MultiPointElement
-    | WiggleElement
     | RectShape
     | CircleShape
     | LineShape
@@ -54,9 +34,6 @@ export class CanvasClickEvent {
 
     canvas?.on('mouse:down', (e) => {
       this.isMouseDown = true
-      if (this.isSpaceKeyDown) {
-        return
-      }
       this.startPoint = e.absolutePointer
       let currentElement = null
 
@@ -83,33 +60,6 @@ export class CanvasClickEvent {
           }
         } else if (useBoardStore.getState().drawType === DrawType.FreeStyle) {
           switch (useDrawStore.getState().drawStyle) {
-            case DrawStyle.Shape:
-              currentElement = new ShapeElement()
-              break
-            case DrawStyle.Pixels:
-              currentElement = new PixelsElement()
-              break
-            case DrawStyle.Text:
-              currentElement = new DrawTextElement()
-              break
-            case DrawStyle.MultiLine:
-              currentElement = new MultiLineElement()
-              break
-            case DrawStyle.Reticulate:
-              currentElement = new ReticulateElement()
-              break
-            case DrawStyle.Rainbow:
-              currentElement = new RainbowElement()
-              break
-            case DrawStyle.Thorn:
-              currentElement = new ThornElement()
-              break
-            case DrawStyle.MultiPoint:
-              currentElement = new MultiPointElement()
-              break
-            case DrawStyle.Wiggle:
-              currentElement = new WiggleElement()
-              break
             default:
               break
           }
@@ -119,12 +69,6 @@ export class CanvasClickEvent {
     })
     canvas?.on('mouse:move', (e) => {
       if (this.isMouseDown) {
-        // Press space, drag the canvas, stop drawing.
-        if (this.isSpaceKeyDown) {
-          canvas.relativePan(new fabric.Point(e.e.movementX, e.e.movementY))
-          return
-        }
-
         // two touch disabled drawing on mobile
         if (paintBoard.event?.touchEvent.isTwoTouch) {
           return
@@ -160,16 +104,5 @@ export class CanvasClickEvent {
         this.currentElement = null
       }
     })
-
-    canvas?.on('mouse:dblclick', (e) => {
-      if (e?.absolutePointer) {
-        const { x, y } = e.absolutePointer
-        paintBoard.textElement?.loadText(x, y)
-      }
-    })
-  }
-
-  setSpaceKeyDownState(isSpaceKeyDown: boolean) {
-    this.isSpaceKeyDown = isSpaceKeyDown
   }
 }

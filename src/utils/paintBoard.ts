@@ -8,8 +8,6 @@ import { DrawStyle, DrawType } from '@/constants/draw'
 import { v4 as uuidv4 } from 'uuid'
 import { CanvasEvent } from './event'
 import { TextElement } from './element/text'
-import { material } from './element/draw/material'
-import { renderMultiColor } from './element/draw/multiColor'
 import { renderPencilBrush } from './element/draw/basic'
 import { getEraserWidth } from './common/draw'
 
@@ -32,8 +30,8 @@ export class PaintBoard {
     enableRetinaScaling: true, // 启用视网膜缩放
     backgroundVpt: false, // 背景视图转换
     backgroundColor: '#FFFFFF', // 背景颜色
-    width: 640, // 固定宽度
-    height: 640 // 固定高度
+    width: Math.min(640, window.innerWidth * 0.9), // 最大宽度640px且不超过屏幕宽度的90%
+    height: Math.min(640, window.innerWidth * 0.9) // 保持正方形
   }
 
   constructor() {
@@ -92,12 +90,6 @@ export class PaintBoard {
   initCanvasStorage() {
     return new Promise((resolve) => {
       if (this.canvas) {
-        // 清除本地存储
-        localStorage.removeItem('PAINT-BOARD-DRAW-STORE')
-        localStorage.removeItem('PAINT-BOARD-SHAPE-STORE')
-        localStorage.removeItem('PAINT-BOARD-BOARD-STORE')
-        localStorage.removeItem('PAINT-BOARD-FILES-STORE')
-
         this.canvas.clear()
         this.canvas.setBackgroundColor('#FFFFFF', () => {
           this.render()
@@ -133,9 +125,7 @@ export class PaintBoard {
       case ActionMode.DRAW:
         if (
           useBoardStore.getState().drawType === DrawType.FreeStyle &&
-          [DrawStyle.Basic, DrawStyle.Material, DrawStyle.MultiColor].includes(
-            useDrawStore.getState().drawStyle
-          )
+          [DrawStyle.Basic].includes(useDrawStore.getState().drawStyle)
         ) {
           isDrawingMode = true
           this.handleDrawStyle()
@@ -185,13 +175,6 @@ export class PaintBoard {
     switch (drawStyle) {
       case DrawStyle.Basic:
         renderPencilBrush()
-        break
-      case DrawStyle.Material:
-        this.canvas.isDrawingMode = true
-        material.render({})
-        break
-      case DrawStyle.MultiColor:
-        renderMultiColor({})
         break
       default:
         this.canvas.isDrawingMode = false

@@ -3,7 +3,6 @@ import { paintBoard } from '@/utils/paintBoard'
 
 import SimpleToolPanel from '@/components/simpleToolPanel'
 import BoardOperation from '@/components/boardOperation'
-import DeleteFileModal from '@/components/boardOperation/deleteFileModal'
 import useBoardStore from '@/store/board'
 
 const Board: React.FC = () => {
@@ -51,15 +50,16 @@ const Board: React.FC = () => {
   }, [updateBackgroundImage])
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center">
-      <canvas className="block touch-none" ref={canvasEl}></canvas>
-      {canvasLoaded && (
-        <>
-          <SimpleToolPanel />
-          <DeleteFileModal />
-          <BoardOperation />
-        </>
-      )}
+    <div className="fixed inset-0">
+      <div className="relative w-full h-full flex items-center justify-center">
+        <canvas className="block touch-none" ref={canvasEl}></canvas>
+        {canvasLoaded && (
+          <>
+            <SimpleToolPanel />
+            <BoardOperation />
+          </>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,42 +1,47 @@
 import { fabric } from 'fabric'
 import { paintBoard } from '../paintBoard'
 import useDrawStore from '@/store/draw'
-import { FontStyle } from '@/constants/font'
-import { isUndefined } from 'lodash'
+import { ELEMENT_CUSTOM_TYPE } from '@/constants'
 
 export class TextElement {
-  text: fabric.IText | null = null
   isTextEditing = false
+  text: fabric.IText | null = null
 
   loadText(x?: number, y?: number) {
-    const canvas = paintBoard?.canvas
-    if (canvas) {
-      // Creating editable text input
-      const viewportCenter = canvas.getVpCenter()
-      const { fontStyles, drawColors, textFontFamily } = useDrawStore.getState()
-
-      const boardCenter = isUndefined(x) && isUndefined(y)
-
-      const text = new fabric.IText('Type here...', {
-        originX: boardCenter ? 'center' : 'left',
-        originY: boardCenter ? 'center' : 'top',
-        left: boardCenter ? viewportCenter.x : x,
-        top: boardCenter ? viewportCenter.y : y,
-        fill: drawColors[0],
-        fontSize: 25 / (canvas?.getZoom() ?? 1),
-        fontFamily: textFontFamily,
-        fontWeight: fontStyles.includes(FontStyle.BOLD) ? 'bold' : 'normal',
-        fontStyle: fontStyles.includes(FontStyle.ITALIC) ? 'italic' : 'normal',
-        underline: fontStyles.includes(FontStyle.UNDER_LINE),
-        linethrough: fontStyles.includes(FontStyle.LINE_THROUGH)
-      })
-      this.text = text
-      canvas.add(text)
-      canvas.setActiveObject(text)
-
-      text.enterEditing() // Enters editing state
-      text.selectAll() // Selects entire text
+    if (this.isTextEditing) {
+      return
     }
+    const canvas = paintBoard.canvas
+    if (!canvas) {
+      return
+    }
+
+    const { drawColors, textFontFamily, drawTextValue } =
+      useDrawStore.getState()
+
+    const text = new fabric.IText(drawTextValue, {
+      left: x || (canvas.width || 0) / 2,
+      top: y || (canvas.height || 0) / 2,
+      fontSize: 20,
+      fontFamily: textFontFamily,
+      fill: drawColors[0],
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+      underline: false,
+      linethrough: false,
+      _customType: ELEMENT_CUSTOM_TYPE.I_TEXT
+    } as fabric.ITextOptions)
+
+    canvas.add(text)
+    canvas.setActiveObject(text)
+    text.enterEditing()
+    text.selectAll()
+    this.isTextEditing = true
+
+    text.on('editing:exited', () => {
+      this.isTextEditing = false
+      paintBoard.history?.saveState()
+    })
   }
 
   resetText() {

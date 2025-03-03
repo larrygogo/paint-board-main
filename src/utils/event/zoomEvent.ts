@@ -14,24 +14,40 @@ export const MAX_ZOOM = 5
 
 export class CanvasZoomEvent {
   constructor() {
-    this.initWheelEvent()
+    const canvas = paintBoard.canvas
+    if (canvas) {
+      canvas.selection = false
+      canvas.defaultCursor = 'default'
+      canvas.hoverCursor = 'default'
+      // 禁用所有平移相关的功能
+      canvas.on('mouse:down', () => {
+        canvas.defaultCursor = 'default'
+      })
+      canvas.on('mouse:move', () => {
+        canvas.defaultCursor = 'default'
+      })
+      canvas.on('mouse:up', () => {
+        canvas.defaultCursor = 'default'
+      })
+    }
+    this.initZoomEvent()
   }
 
-  initWheelEvent() {
-    const canvas = paintBoard?.canvas
-    canvas?.on('mouse:wheel', (options) => {
-      // Clear the current text input box
-      paintBoard.textElement?.resetText()
+  initZoomEvent() {
+    const canvas = paintBoard.canvas
+    if (!canvas) return
 
-      const delta = options.e.deltaY // Get the direction in which the wheel scrolls
-
-      // Adjust the zoom ratio according to the direction of the scroll wheel
-      let zoom = canvas.getZoom()
-      zoom = delta > 0 ? zoom * 1.1 : zoom / 1.1
-
-      if (zoom < MIN_ZOOM || zoom > MAX_ZOOM) {
+    canvas.on('mouse:wheel', (options) => {
+      const { e } = options
+      // 只在 select 模式下允许缩放
+      if (useBoardStore.getState().mode !== ActionMode.SELECT) {
         return
       }
+
+      const delta = options.e.deltaY
+      let zoom = canvas.getZoom()
+      zoom = delta > 0 ? zoom * 1.1 : zoom / 1.1
+      zoom = Math.min(Math.max(MIN_ZOOM, zoom), MAX_ZOOM)
 
       if (!useBoardStore.getState().isObjectCaching) {
         fabric.Object.prototype.set({
@@ -39,14 +55,31 @@ export class CanvasZoomEvent {
         })
       }
 
-      const centerX = (canvas?.width || 1) / 2
-      const centerY = (canvas?.height || 1) / 2
-      zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom))
-      canvas.zoomToPoint({ x: centerX, y: centerY }, zoom)
+      // 获取鼠标相对于画布的位置
+      const pointer = canvas.getPointer(e)
+      // 获取当前缩放比例
+      const currentZoom = canvas.getZoom()
+      // 计算新的缩放比例
+      const newZoom = Math.min(Math.max(MIN_ZOOM, zoom), MAX_ZOOM)
+
+      // 计算缩放中心点
+      const zoomCenter = new fabric.Point(pointer.x, pointer.y)
+
+      // 使用鼠标位置作为缩放中心点
+      canvas.zoomToPoint(zoomCenter, newZoom)
+
+      // 获取背景图对象
+      const backgroundImage = canvas.backgroundImage as fabric.Image
+      if (backgroundImage && backgroundImage.width && backgroundImage.height) {
+        // 应用缩放比例
+        backgroundImage.scale(newZoom)
+        // 更新背景图的尺寸
+        backgroundImage.setCoords()
+      }
 
       options.e.preventDefault()
       options.e.stopPropagation()
-      this.updateZoomPercentage(true, zoom)
+      this.updateZoomPercentage(true, newZoom)
     })
   }
 
@@ -113,15 +146,17 @@ const handleWidth = () => {
       break
     case ActionMode.DRAW:
       if (
-        [DrawStyle.Basic, DrawStyle.Material, DrawStyle.MultiColor].includes(
-          useDrawStore.getState().drawStyle
-        )
+        !paintBoard.canvas ||
+        ![DrawStyle.Basic].includes(useDrawStore.getState().drawStyle)
       ) {
-        brush.width = getDrawWidth()
-        if (
-          useDrawStore.getState().drawStyle === DrawStyle.Basic &&
-          brush.shadow
-        ) {
+        return
+      }
+      brush.width = getDrawWidth()
+      if (
+        useDrawStore.getState().drawStyle === DrawStyle.Basic &&
+        paintBoard.canvas
+      ) {
+        if (brush.shadow) {
           ;(brush.shadow as fabric.Shadow).blur = getShadowWidth()
         }
       }

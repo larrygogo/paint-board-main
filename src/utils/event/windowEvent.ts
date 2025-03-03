@@ -1,8 +1,5 @@
-import { KeyCode } from '@/constants/event'
 import { paintBoard } from '../paintBoard'
 import { ImageElement } from '../element/image'
-import { fabric } from 'fabric'
-import useBoardStore from '@/store/board'
 
 export class WindowEvent {
   constructor() {
@@ -10,62 +7,15 @@ export class WindowEvent {
   }
 
   initWindowEvent() {
-    window.addEventListener('keydown', this.keydownFn)
-    window.addEventListener('keyup', this.keyupFn)
     window.addEventListener('paste', this.pasteFn)
     window.addEventListener('resize', this.resizeFn)
     window.addEventListener('orientationchange', this.resizeFn)
   }
 
   removeWindowEvent() {
-    window.removeEventListener('keydown', this.keydownFn)
-    window.removeEventListener('keyup', this.keyupFn)
     window.removeEventListener('paste', this.pasteFn)
     window.removeEventListener('resize', this.resizeFn)
     window.removeEventListener('orientationchange', this.resizeFn)
-  }
-
-  keydownFn(e: KeyboardEvent) {
-    const canvas = paintBoard?.canvas
-    switch (e.code) {
-      case KeyCode.SPACE:
-        /**
-         * After pressing the SPACE key, change the mouse style, disable the drawing function, and open the drawing cache
-         */
-        paintBoard?.event?.clickEvent.setSpaceKeyDownState(true)
-        if (canvas) {
-          if (!useBoardStore.getState().isObjectCaching) {
-            fabric.Object.prototype.set({
-              objectCaching: true
-            })
-          }
-          canvas.defaultCursor = 'pointer'
-          canvas.isDrawingMode = false
-          canvas.selection = false
-          fabric.Object.prototype.set({
-            selectable: false,
-            hoverCursor: 'pointer'
-          })
-        }
-        break
-      case KeyCode.BACKSPACE:
-        paintBoard.deleteObject()
-        break
-      default:
-        break
-    }
-  }
-
-  keyupFn(e: KeyboardEvent) {
-    if (e.code === KeyCode.SPACE) {
-      /**
-       * restores all states.
-       */
-      paintBoard.event?.clickEvent.setSpaceKeyDownState(false)
-      if (paintBoard.canvas) {
-        paintBoard.canvas.defaultCursor = 'default'
-      }
-    }
   }
 
   pasteFn(e: ClipboardEvent) {
@@ -98,10 +48,10 @@ export class WindowEvent {
   resizeFn() {
     const canvas = paintBoard.canvas
     if (canvas) {
-      // canvas.setWidth(window.innerWidth * useBoardStore.getState().canvasWidth)
-      // canvas.setHeight(
-      //   window.innerHeight * useBoardStore.getState().canvasHeight
-      // )
+      // 修改画布大小，使其最大640px且不超过当前屏幕宽度的90%
+      const maxWidth = Math.min(window.innerWidth * 0.9, 640)
+      canvas.setWidth(maxWidth)
+      canvas.setHeight(maxWidth)
     }
   }
 }
