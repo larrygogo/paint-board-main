@@ -109,31 +109,12 @@ export class CanvasTouchEvent {
       const canvasHeight = canvas.getHeight() || 1
       const center = new fabric.Point(canvasWidth / 2, canvasHeight / 2)
 
-      // 重置画布位置
-      canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
-
-      // 先移动到中心点
-      canvas.absolutePan(
-        new fabric.Point(
-          (canvasWidth - canvasWidth * zoom) / 2,
-          (canvasHeight - canvasHeight * zoom) / 2
-        )
-      )
-
-      // 然后以中心点进行缩放
+      // 直接以中心点进行缩放
       canvas.zoomToPoint(center, zoom)
-
-      // 再次重置画布位置并居中
-      canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
-      canvas.absolutePan(
-        new fabric.Point(
-          (canvasWidth - canvasWidth * zoom) / 2,
-          (canvasHeight - canvasHeight * zoom) / 2
-        )
-      )
 
       const zoomEvent = (paintBoard.event as any)?.zoomEvent
       zoomEvent?.updateZoomPercentage(true, zoom)
+      
 
       // 获取背景图对象
       const backgroundImage = canvas.backgroundImage as fabric.Image
@@ -142,6 +123,16 @@ export class CanvasTouchEvent {
         backgroundImage.scale(zoom)
         // 更新背景图的尺寸
         backgroundImage.setCoords()
+
+        // 计算背景图的中心点
+        const bgCenter = new fabric.Point(
+          canvasWidth / 2 - backgroundImage.getScaledWidth() / 2,
+          canvasHeight / 2 - backgroundImage.getScaledHeight() / 2
+        )
+        console.log('bgCenter', bgCenter)
+
+        // 将背景图居中
+        canvas.absolutePan(bgCenter)
       }
     }
   }
