@@ -26,7 +26,35 @@ const Board: React.FC = () => {
   useEffect(() => {
     // 实现接收图片的全局方法
     window.receiveImage = (imageUrl: string) => {
-      updateBackgroundImage(imageUrl)
+      // const img = new Image()
+      // img.src = imageUrl
+      // img.onload = () => {
+      //   if (canvasEl.current) {
+      //     const canvas = canvasEl.current
+      //     const context = canvas.getContext('2d')
+      //     if (context) {
+      //       // 清空画布
+      //       context.clearRect(0, 0, canvas.width, canvas.height)
+      //       // 绘制图片并调整大小
+      //       context.drawImage(img, 0, 0, canvas.width, canvas.height)
+      //     }
+      //   }
+      // }
+
+      // 创建canvas
+      const canvas = document.createElement('canvas')
+      const context = canvas.getContext('2d')
+      console.log(context)
+      if (context) {
+        // 从base64获取图片
+        const img = new Image()
+        img.src = imageUrl
+        img.onload = () => {
+          context.drawImage(img, 0, 0, canvas.width, canvas.height)
+          const base64 = canvas.toDataURL('image/png')
+          updateBackgroundImage(base64)
+        }
+      }
     }
 
     // 实现清空画布的全局方法
