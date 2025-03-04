@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { paintBoard } from '@/utils/paintBoard'
 
-import SimpleToolPanel from '@/components/simpleToolPanel'
+import ToolPanel from '@/components/toolPanel'
 import BoardOperation from '@/components/boardOperation'
 import useBoardStore from '@/store/board'
 
@@ -55,7 +55,7 @@ const Board: React.FC = () => {
         <canvas className="block touch-none" ref={canvasEl}></canvas>
         {canvasLoaded && (
           <>
-            <SimpleToolPanel />
+            <ToolPanel />
             <BoardOperation />
           </>
         )}

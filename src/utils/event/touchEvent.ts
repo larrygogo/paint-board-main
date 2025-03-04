@@ -98,43 +98,34 @@ export class CanvasTouchEvent {
       // Calculate zoom
       let zoom = this.startScale * (currentDistance / this.startDistance)
       zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom))
-      if (!useBoardStore.getState().isObjectCaching) {
-        fabric.Object.prototype.set({
-          objectCaching: true
-        })
+
+      // 计算画布的中心点
+      const centerX = canvas.getWidth() / 2
+      const centerY = canvas.getHeight() / 2
+      const centerPoint = new fabric.Point(centerX, centerY)
+
+      // 使用 zoomToPoint 方法设置缩放中心为画布中心
+      canvas.zoomToPoint(centerPoint, zoom)
+
+      // 如果画布有背景图，则缩放背景图
+      if (useBoardStore.getState().hasBackgroundImage) {
+        const backgroundImage = paintBoard.canvas
+          ?.backgroundImage as fabric.Image
+        if (backgroundImage) {
+          // 调整背景图的缩放
+          backgroundImage.scale(zoom)
+
+          // 获取背景图的宽度和高度，提供默认值
+          const imageWidth = backgroundImage.width || 0
+          const imageHeight = backgroundImage.height || 0
+
+          // 根据画布中心点调整背景图的位置
+          backgroundImage.left = centerX - (imageWidth * zoom) / 2
+          backgroundImage.top = centerY - (imageHeight * zoom) / 2
+
+          backgroundImage.setCoords()
+        }
       }
-
-      paintBoard.canvas?.setZoom(zoom)
-
-      // // 使用画布的中心点进行缩放
-      // const canvasWidth = canvas.getWidth() || 1
-      // const canvasHeight = canvas.getHeight() || 1
-      // const center = new fabric.Point(canvasWidth / 2, canvasHeight / 2)
-
-      // // 直接以中心点进行缩放
-      // // canvas.zoomToPoint(center, zoom)
-
-      // const zoomEvent = (paintBoard.event as any)?.zoomEvent
-      // zoomEvent?.updateZoomPercentage(true, zoom)
-
-      // // 获取背景图对象
-      // const backgroundImage = canvas.backgroundImage as fabric.Image
-      // if (backgroundImage && backgroundImage.width && backgroundImage.height) {
-      //   // 应用缩放比例
-      //   backgroundImage.scale(zoom)
-      //   // 更新背景图的尺寸
-      //   backgroundImage.setCoords()
-
-      //   // 计算背景图的中心点
-      //   const bgCenter = new fabric.Point(
-      //     canvasWidth / 2 - backgroundImage.getScaledWidth() / 2,
-      //     canvasHeight / 2 - backgroundImage.getScaledHeight() / 2
-      //   )
-      //   console.log('bgCenter', bgCenter)
-
-      //   // 将背景图居中
-      //   canvas.absolutePan(bgCenter)
-      // }
     }
   }
 
