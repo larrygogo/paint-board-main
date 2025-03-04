@@ -163,6 +163,10 @@ const useBoardStore = create<BoardState & BoardAction>()((set, get) => ({
   },
   updateBackgroundImage: (url: string) => {
     handleBackgroundImage(url)
+    set({
+      hasBackgroundImage: true,
+      backgroundImageOpacity: 1
+    })
   },
   cleanBackgroundImage: () => {
     set({

@@ -104,36 +104,37 @@ export class CanvasTouchEvent {
         })
       }
 
-      // 使用画布的中心点进行缩放
-      const canvasWidth = canvas.getWidth() || 1
-      const canvasHeight = canvas.getHeight() || 1
-      const center = new fabric.Point(canvasWidth / 2, canvasHeight / 2)
+      paintBoard.canvas?.setZoom(zoom)
 
-      // 直接以中心点进行缩放
-      canvas.zoomToPoint(center, zoom)
+      // // 使用画布的中心点进行缩放
+      // const canvasWidth = canvas.getWidth() || 1
+      // const canvasHeight = canvas.getHeight() || 1
+      // const center = new fabric.Point(canvasWidth / 2, canvasHeight / 2)
 
-      const zoomEvent = (paintBoard.event as any)?.zoomEvent
-      zoomEvent?.updateZoomPercentage(true, zoom)
-      
+      // // 直接以中心点进行缩放
+      // // canvas.zoomToPoint(center, zoom)
 
-      // 获取背景图对象
-      const backgroundImage = canvas.backgroundImage as fabric.Image
-      if (backgroundImage && backgroundImage.width && backgroundImage.height) {
-        // 应用缩放比例
-        backgroundImage.scale(zoom)
-        // 更新背景图的尺寸
-        backgroundImage.setCoords()
+      // const zoomEvent = (paintBoard.event as any)?.zoomEvent
+      // zoomEvent?.updateZoomPercentage(true, zoom)
 
-        // 计算背景图的中心点
-        const bgCenter = new fabric.Point(
-          canvasWidth / 2 - backgroundImage.getScaledWidth() / 2,
-          canvasHeight / 2 - backgroundImage.getScaledHeight() / 2
-        )
-        console.log('bgCenter', bgCenter)
+      // // 获取背景图对象
+      // const backgroundImage = canvas.backgroundImage as fabric.Image
+      // if (backgroundImage && backgroundImage.width && backgroundImage.height) {
+      //   // 应用缩放比例
+      //   backgroundImage.scale(zoom)
+      //   // 更新背景图的尺寸
+      //   backgroundImage.setCoords()
 
-        // 将背景图居中
-        canvas.absolutePan(bgCenter)
-      }
+      //   // 计算背景图的中心点
+      //   const bgCenter = new fabric.Point(
+      //     canvasWidth / 2 - backgroundImage.getScaledWidth() / 2,
+      //     canvasHeight / 2 - backgroundImage.getScaledHeight() / 2
+      //   )
+      //   console.log('bgCenter', bgCenter)
+
+      //   // 将背景图居中
+      //   canvas.absolutePan(bgCenter)
+      // }
     }
   }
 

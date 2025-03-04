@@ -1,5 +1,6 @@
 import { paintBoard } from '../paintBoard'
 import { ImageElement } from '../element/image'
+import useBoardStore from '@/store/board'
 
 export class WindowEvent {
   constructor() {
@@ -52,6 +53,14 @@ export class WindowEvent {
       const maxWidth = Math.min(window.innerWidth * 0.9, 640)
       canvas.setWidth(maxWidth)
       canvas.setHeight(maxWidth)
+
+      // 如果有背景图，则修改背景图大小，使其铺满画布
+      if (useBoardStore.getState().hasBackgroundImage) {
+        const backgroundImage = paintBoard.canvas
+          ?.backgroundImage as fabric.Image
+        backgroundImage.scaleToWidth(maxWidth, true)
+        backgroundImage.scaleToHeight(maxWidth, true)
+      }
     }
   }
 }
