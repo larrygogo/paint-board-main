@@ -26,35 +26,30 @@ const Board: React.FC = () => {
   useEffect(() => {
     // 实现接收图片的全局方法
     window.receiveImage = (imageUrl: string) => {
-      // const img = new Image()
-      // img.src = imageUrl
-      // img.onload = () => {
-      //   if (canvasEl.current) {
-      //     const canvas = canvasEl.current
-      //     const context = canvas.getContext('2d')
-      //     if (context) {
-      //       // 清空画布
-      //       context.clearRect(0, 0, canvas.width, canvas.height)
-      //       // 绘制图片并调整大小
-      //       context.drawImage(img, 0, 0, canvas.width, canvas.height)
-      //     }
-      //   }
-      // }
+      const img = new window.Image() as HTMLImageElement
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
 
-      // 创建canvas
-      const canvas = document.createElement('canvas')
-      const context = canvas.getContext('2d')
-      console.log(context)
-      if (context) {
-        // 从base64获取图片
-        const img = new Image()
-        img.src = imageUrl
-        img.onload = () => {
-          context.drawImage(img, 0, 0, canvas.width, canvas.height)
-          const base64 = canvas.toDataURL('image/png')
-          updateBackgroundImage(base64)
-        }
+        // 假设画板的宽高可以通过某种方式获取，例如通过 ref 或者全局变量
+        const boardWidth = paintBoard.canvas?.getWidth() || 1
+        const boardHeight = paintBoard.canvas?.getHeight() || 1
+        const boardMinSide = Math.min(boardWidth, boardHeight)
+
+        const scale = boardMinSide / Math.min(img.width, img.height)
+        const newWidth = img.width * scale
+        const newHeight = img.height * scale
+
+        canvas.width = newWidth
+        canvas.height = newHeight
+
+        ctx.drawImage(img, 0, 0, newWidth, newHeight)
+
+        const croppedData = canvas.toDataURL()
+        updateBackgroundImage(croppedData)
       }
+      img.src = imageUrl
     }
 
     // 实现清空画布的全局方法
