@@ -205,6 +205,17 @@ const ToolPanel: FC = () => {
     // 这里可以添加更新画笔颜色的逻辑
   }
 
+  // 判断颜色是否为浅色的函数
+  const isLightColor = (color: string) => {
+    const hex = color.replace('#', '')
+    const r = parseInt(hex.substring(0, 2), 16)
+    const g = parseInt(hex.substring(2, 4), 16)
+    const b = parseInt(hex.substring(4, 6), 16)
+    // 使用简单的亮度公式
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000
+    return brightness > 155
+  }
+
   return (
     <>
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1 bg-white rounded-lg shadow-xl p-1">
@@ -292,11 +303,11 @@ const ToolPanel: FC = () => {
         </label>
 
         <button
-          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100"
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-200"
           onClick={() => setShowColorPicker(true)}
           style={{
-            color: borderColor,
-            backgroundColor: borderColor === '#ffffff' ? '#777777' : ''
+            color: isLightColor(borderColor) ? '#000000' : '#ffffff',
+            backgroundColor: borderColor
           }}
         >
           <Palette size={16} />
